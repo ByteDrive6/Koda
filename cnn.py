@@ -4,7 +4,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 from tensorflow.keras.optimizers import Adam
 
-
 # preprocesiran data mores dat v training, validation and testing sets
 # uci se iz enega seta, generalizira na drurgega in potem evalueta performance na tretjem setu
 # https://medium.com/@ratnesh4209211786/unleashing-the-power-of-cnn-on-audio-voice-recognition-use-case-d60bc8bcc665
