@@ -11,7 +11,8 @@ def calculate_intervals():
     num_intervals = int(np.ceil(t[-1])) // 3 # casovni intervali
     interval_peak_amplitudes = np.zeros(num_intervals)
     
-    for i in range(num_intervals):
+    for i in range(num_intervals): # racunanje amplitud glede na vsak posamezni interval
+
         interval_start = i * 3
         interval_end = (i + 1) * 3
         interval_peaks = peaks[(t[peaks] >= interval_start) & (t[peaks] < interval_end)]
@@ -20,18 +21,21 @@ def calculate_intervals():
 
     num = int(entry.get())
     max_peak_intervals = np.argsort(interval_peak_amplitudes)[-num:]
+    print(max_peak_intervals)
     
     ax_main.clear()
     ax_main.plot(t, y, linewidth=0.5)
     ax_main.set_xlabel('Time (s)')
     ax_main.set_ylabel('Amplitude')
     ax_main.plot(peak_times, peak_amplitudes, 'ko', markersize=3, label='Peaks')
-    
-    for interval_index in max_peak_intervals: # oznacis intervale, ki se ti zdijo primerni
+
+    for interval_index in max_peak_intervals: # highlightas tisto 
+
         interval_start = interval_index * 3
         interval_end = (interval_index + 1) * 3
         ax_main.axvspan(interval_start, interval_end, color='r', alpha=0.3) 
     
+
     # ustvari se konveksna
     for interval_index in max_peak_intervals:
         interval_start = interval_index * 3
@@ -52,15 +56,17 @@ y, sr = librosa.load(audio_file)
 t = np.linspace(0, len(y) / sr, len(y))
 peaks, _ = find_peaks(y, distance=5000) # peaks se zracunajo
 
+
 root = tk.Tk()
 root.title("Audio Waveform Viewer")
 
 
-label = tk.Label(root, text="Enter the number of intervals:")
+label = tk.Label(root, text="Vnesite število intervalov:")
 label.pack()
 entry = tk.Entry(root)
 entry.pack()
-button = tk.Button(root, text="Calculate Intervals", command=calculate_intervals)
+button = tk.Button(root, text="Izračunaj intervale", command=calculate_intervals)
+
 button.pack()
 
 fig_main = Figure(figsize=(12, 4))
@@ -73,6 +79,7 @@ peak_times = t[peaks]
 peak_amplitudes = y[peaks]
 ax_main.plot(peak_times, peak_amplitudes, 'ko', markersize=3, label='Peaks')
 
+
 #da se ti na zacetku pojavijo kje bi lahko bili intervali
 num_intervals = int(np.ceil(t[-1])) // 3
 for i in range(num_intervals):
@@ -80,6 +87,7 @@ for i in range(num_intervals):
     interval_end = (i + 1) * 3
     ax_main.axvline(x=interval_start, color='r', linestyle='-', linewidth=1)
     ax_main.axvline(x=interval_end, color='r', linestyle='-', linewidth=1)
+
 
 canvas_main = FigureCanvasTkAgg(fig_main, master=root)
 canvas_main.draw()
