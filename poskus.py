@@ -66,7 +66,6 @@ label.pack()
 entry = tk.Entry(root)
 entry.pack()
 button = tk.Button(root, text="Izračunaj intervale", command=calculate_intervals)
-
 button.pack()
 
 fig_main = Figure(figsize=(12, 4))
