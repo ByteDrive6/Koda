@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfile
+from tkinter import messagebox
 import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 from PIL import Image, ImageTk
 import librosa
 import librosa.display
+import tensorflow as tf
 
 def show_mfcc_graph(filename):
     print("Ustvarjam graf - počakaj malo")
@@ -57,8 +59,20 @@ def show_mfcc_graph(filename):
 
 def choose_file():
     filename = askopenfile()
+    # Primer uporabe funkcije
+    model_path = 'cnn_siren_detection_model.h5'
+    model = tf.keras.models.load_model(model_path)
+    audio_file_path = 'C:\\Users\\firerr\\Documents\\Audacity\\posnetek1_2024_4_4_19_13_45.wav'
+
     if filename:
         img_tk_mfcc, img_tk_spec = show_mfcc_graph(filename.name)
+
+        is_siren, confidence = predict_siren_presence(model, filename.name)
+        print(f"Sirena prisotna: {'Da' if is_siren else 'Ne'} z zaupanjem {confidence:.2f}")
+        if is_siren:
+            message = f"Sirena je prisotna! (Prediction: {confidence:.2f})"
+        else:
+            message = f"Sirena ni prisotna! (Prediction: {confidence:.2f})"
 
         if img_tk_mfcc and img_tk_spec:
             mfcc_features = extract_mfcc_features([filename.name])
@@ -81,6 +95,9 @@ def choose_file():
             label_spec = tk.Label(top, image=img_tk_spec)
             label_spec.image = img_tk_spec
             label_spec.pack()
+        
+        messagebox.showinfo("Rezultat Napovedi", message)
+
 
 def extract_mfcc_features(audio_files):
     mfcc_features = []
@@ -112,6 +129,47 @@ def pad_features(features, max_length):
             padded_feature = feature[:, :max_length]
         padded_features.append(padded_feature)
     return np.array(padded_features)
+
+
+# Dodana implementacija za uporabo CNN
+
+def predict_siren_presence(model, audio_path, sr=44100):
+    print(f"fileath: {audio_path}")
+    mfcc_features = []
+    segment_length_sec = 6
+    sample_rate = 44100
+    segment_length_samples = segment_length_sec * sample_rate
+    total_duration_samples = 60 * sample_rate  # skupna dolžina vzorcev za 60s
+
+    # Naloži zvočni posnetek
+    y, sr = librosa.load(audio_path, sr=sr)
+    # Dopolnitev zvočnega posnetka na 60 sekund, če je krajši
+    if len(y) < total_duration_samples:
+        y = librosa.util.fix_length(y, size=total_duration_samples)
+
+    # Pretvori zvočni posnetek v MFCC značilnosti   
+    # Segmentacija zvočnega posnetka in izračun MFCC
+    for start in range(0, total_duration_samples, segment_length_samples):
+        end = start + segment_length_samples
+        segment = y[start:end]
+        mfcc = librosa.feature.mfcc(y=segment, sr=sr)
+        mfcc_features.append(mfcc.T)  # Transponiraj, da bo oblika (časovni okvirji, značilnosti)
+
+    mfcc_features = np.array(mfcc_features)
+    # Preverimo, če je oblika mfcc_features ustrezna, sicer dodamo potrebne dimenzije
+    if mfcc_features.ndim == 3:
+        mfcc_features = np.expand_dims(mfcc_features, axis=-1)  # Dodajemo dodatno dimenzijo za kanale
+
+    print(f"Oblika vhodnih MFCC značilnosti: {mfcc_features.shape}")
+
+    # Napoved s modelom
+    prediction = model.predict(mfcc_features)
+    
+    # Sirena je prisotna, če je napoved večja od 0.5
+    siren_present = prediction[0, 0] > 0.5
+    
+    return siren_present, prediction[0, 0]
+
 
 top = tk.Tk()
 top.geometry("800x800")
