@@ -1,0 +1,45 @@
+PREDOBDELAVA PODATKOV ZA 4-RAZREDNO KONVOLUCIJSKO NEVRONSKO MREŽO
+
+- imamo 3 .txt datoteke imenovane: oznake-resevalna.txt , oznake-policijska.txt , oznake-gasilska.txt:
+	primer: posnetek21_2024_25_4_16_34_45 : 18s - 30s
+
+- imamo 3 mape imenovane policijske, reševalne, gasilske, ki vsebujejo zvočne posnetke imenovanih siren
+
+- preobdelava podatkov bo potekala tako, da najprej iz vsake mape prebere zvočne posnetke in jih pretvori v mfcc_features, ki jih shrani v 3 ločene array-e
+- na primer: - mfcc_features_r
+			 - mfcc_features_g
+			 - mfcc_features_p
+
+- potem sledi še branje in segmentiranje oznak iz .txt datotek
+- oznake iz oznake-resevalna.txt bojo predstavljene z 0-ni prisotna in 1-je prisotna sirena
+- oznake iz oznake-gasilska.txt bojo predstavljene z 0-ni prisotna in 2-je prisotna sirena
+- oznake iz oznake-policijska.txt bojo predstavljene z 0-ni prisotna in 3-je prisotna
+
+
+RAZLAGA:
+	I can tell a police car’s siren the rhythm is rapid: wuwuwuwuwuw!
+
+	An ambulance siren’s sound cycles are less rapid, more mellow—wooooh-<split second pause>wooooh <split second pause> wooooh, and lower in both pitch and frequency than the police siren
+
+	A fire engine: a long drawl—-WOOOOOOOOOOWOOOOOOOO: <sudden HONK HONK> WOOOOOOOOOOWOOOOOOOOH with pitch and volume somewhere between a train whistle or fog horn, but lowest of all in pitch and frequency.
+
+	Likely rapid rhythms grab attention or alert listeners more directly, serving as an audible cue or audible symbol, for example, a fast-moving police car has a high-frequency, high pitch siren.
+
+	Another example of this is the strobe light and rapid-fire screeching of the ambulance horn such as when traversing an intersection
+
+	in increasing size and speed: police car < ambulance < fire engine
+	in decreasing frequency and pitch: police car < ambulance < fire engine
+	Thanks for reading
+
+
+MODELI DO SEDAJ:
+--> 3_class_cnn_siren_recognition_model-2.najboljsi.h5
+	- najboljše je delala, ko sem nastavila learning_rate = 0.0005 in wd=1e-6 in epoch=20
+	- uporabila sem early_stopper in tak 10 konv. nivojev
+	- Testna natančnost: 0.800000011920929, testna izguba: 0.8417231440544128
+	
+--> 3_class_cnn_siren_recognition_model-best_yet.h5
+	- najboljše je delala -> prepozna tako gasilsko kot reševalno sireno in tudi javi kdaj sirene zagotovo ni (policijske še nisem testirala)
+	- uporabila sem early_stopper, lr = 0.0001, wd = 1e-6, epoch = 20
+	- 86 učnih posnetkov za vsako od kategorij: brez sirene, reševalna, gasilska
+	- Testna natančnost: 0.7692307829856873, testna izguba: 0.7476214170455933
