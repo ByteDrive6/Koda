@@ -29,7 +29,37 @@ const height = container.offsetHeight;
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
+// OrbitControls - za kamero
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; 
+controls.dampingFactor = 0.05;
+controls.minDistance = 1; 
+controls.maxDistance = 50; 
+controls.target.set(0, 0, 0); 
+controls.update();
+
 const loader = new GLTFLoader(); 
+
+// ozadje
+let backgroundModel;
+loader.load('ozadje.glb', function (gltf) {
+    backgroundModel = gltf.scene;
+    backgroundModel.scale.set(4, 2, -1);
+    backgroundModel.position.set(-18, -3, -400);
+    scene.add(backgroundModel);
+}, undefined, function (error) {
+    console.error(error);
+});
+
+let treeModel; // iz spleta model
+loader.load('tree.glb', function (gltf) {
+    treeModel = gltf.scene;
+    treeModel.scale.set(7, 3, -1);
+    treeModel.position.set(60, 3, -100);
+    scene.add(treeModel);
+}, undefined, function (error) {
+    console.error(error);
+});
 
 let modelPlosca;
 loader.load('armaturna_plosca.glb', function (gltf) {
@@ -56,16 +86,21 @@ loader.load('gasilskiAvto.glb', function (gltf) {
 
 
 function animate() {
+    if (treeModel) {
+        treeModel.position.z += 0.5; 
+    }
+
     if (modelGasilski) {
-        modelGasilski.position.x += 0.05; 
+        modelGasilski.position.x += 0.04;
         modelGasilski.position.z -= 0.07;
-        modelGasilski.scale.multiplyScalar(0.995); 
+        modelGasilski.scale.multiplyScalar(0.995);
 
         if (modelGasilski.scale.x < 0.15) {
-            scene.remove(modelGasilski); 
+            scene.remove(modelGasilski);
             modelGasilski = null;
         }
     }
+    controls.update(); // OrbitControls
     renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
