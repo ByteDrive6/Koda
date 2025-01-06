@@ -1,6 +1,8 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; 
-import { CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js';
+import * as THREE from './node_modules/three';
+import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+import { CSS3DRenderer } from './node_modules/three/examples/jsm/renderers/CSS3DRenderer.js';
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';  // Add this line
+
 
 const scene = new THREE.Scene();
 scene.background = null; 
@@ -29,6 +31,7 @@ const height = container.offsetHeight;
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
+/*
 // OrbitControls - za kamero
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; 
@@ -50,6 +53,7 @@ loader.load('ozadje.glb', function (gltf) {
 }, undefined, function (error) {
     console.error(error);
 });
+
 
 let treeModel; // iz spleta model
 loader.load('tree.glb', function (gltf) {
@@ -84,7 +88,6 @@ loader.load('gasilskiAvto.glb', function (gltf) {
     console.error(error);
 });
 
-
 function animate() {
     if (treeModel) {
         treeModel.position.z += 0.5; 
@@ -105,6 +108,88 @@ function animate() {
 }
 renderer.setAnimationLoop(animate);
 
+// Lahko bi uporabile to kot eno funkcijo za nalaganje modelov intervencijskih vozil:
+function loadModels() {
+    const loader = new GLTFLoader();
+    
+    if (selectedVehicle === "resevalec") {
+        // Nalaganje modela reševalnega vozila
+        loader.load('resevalec.glb', function (gltf) {
+            const model = gltf.scene;
+            model.scale.set(1, 1, 1);
+            model.position.set(0, 0, 0);
+            scene.add(model);
+        });
+    } else if (selectedVehicle === "gasilci") {
+        // Nalaganje modela gasilskega vozila
+        loader.load('gasilci.glb', function (gltf) {
+            const model = gltf.scene;
+            model.scale.set(1, 1, 1);
+            model.position.set(0, 0, 0);
+            scene.add(model);
+        });
+        
+    } else if (selectedVehicle === "policija") {
+        // Nalaganje modela policijskega vozila
+        loader.load('policija.glb', function (gltf) {
+            const model = gltf.scene;
+            model.scale.set(1, 1, 1);
+            model.position.set(0, 0, 0);
+            scene.add(model);
+        });
+    }
+}*/
+
+// Funkcija za nastavitev scenarija
+function setScenarioEnvironment() {
+    if (selectedScenario === "avtocesta") {
+        // Nastavi avtocesto
+        console.log("Nastavljena avtocesta.");
+        // Dodadamo okolje avtoceste
+    } else if (selectedScenario === "prazna") {
+        // Nastavi samotno cesto
+        console.log("Nastavljena samotna cesta.");
+        // Dodaj modele dreves in prazno cesto - ubistvu že imamo to
+    } else if (selectedScenario === "mesto") {
+        // Nastavi mesto - pomojem lahko tisto z interneta
+        console.log("Nastavljeno mesto.");
+    }
+
+    if (dezEnabled === true) {
+        // Dodaj simulacijo dežnih kapljic na izbran scenarij
+        console.log("Dodana simulacija dežnih kapljic.");
+        // Lahko dodamo padanje dežnih kapljic na vetrobransko steklo - eni sošolci imajo to implementacijo
+    }
+}
+
+// Funkcija za nalaganje zvokov
+function loadSounds() {
+    if (dezEnabled === true && selectedScenario === "avtocesta") {
+        // Nalagaj zvok dežja in avtoceste
+        console.log("Nalagam zvok dežja na avtocesti...");
+    } 
+    else  if (dezEnabled === false && selectedScenario === "avtocesta") {
+        // Nalagaj avtocesto brez dežje
+        console.log("Nalagam zvok avtoceste...");
+    } 
+    else if (dezEnabled === true && selectedScenario === "prazna") {
+        // Nalagaj zvok dežja in vožnje po samotni cesti
+        console.log("Nalagam zvok dežja in vožnje po samotni cesti...");
+    }
+    else if (dezEnabled === false && selectedScenario === "prazna") {
+        // Nalagaj zvok vožnje po samotni cesti
+        console.log("Nalagam zvok vožnje po samotni cesti...");
+    }
+    else if (dezEnabled === true && selectedScenario === "mesto") {
+        // Naloži zvok dežja in vožnje po mestu
+        console.log("Nalagam zvok dežja in vožnje po mestu...");
+    } else if (dezEnabled === false && selectedScenario === "mesto") {
+        // Naloži zvok vožnje po mestu
+        console.log("Nalagam zvok vožnje po mestu...");
+    }
+}
+
+
 
 window.addEventListener('resize', () => {
     const width = container.offsetWidth;
@@ -114,10 +199,104 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
+// Simulacija - spremljamo, ali je aktivna
+let simulationRunning = false;
+// Parametri, ki so potrebni za simulacijo
+let selectedVehicle = null;
+let selectedDirection = null;
+let selectedScenario = null;
+let dezEnabled = false;
+
+let mainMenuVisible = false;
+
+window.toggleMainMenu = toggleMainMenu;
+document.addEventListener('keydown', (event) => {
+    if (event.key === "Escape" || event.key === "m") {
+        toggleMainMenu();
+    }
+    // Dodajanje možnosti za začetek simulacije ob pritisku na tipko P ali SPACE
+    if ((event.key === "P" || event.key === " ") && !simulationRunning) {
+        startSimulation();
+    }
+});
+
+function toggleMainMenu() {
+    mainMenuVisible = !mainMenuVisible;
+    const menu = document.getElementById("popupMenu");
+    menu.style.display = mainMenuVisible ? "block" : "none";
+    if (mainMenuVisible) {
+        document.getElementById("help").style.display = "none";
+    }
+}
+
+window.showHelp = showHelp;
+function showHelp() {
+    document.getElementById("popupMenu").style.display = "none";
+    document.getElementById("help").style.display = "block";
+}
+
+window.closeHelp = closeHelp;
+function closeHelp() {
+    document.getElementById("help").style.display = "none";
+    document.getElementById("popupMenu").style.display = "block";
+}
+
+window.selectVehicle = selectVehicle;
+// Izberi vozilo
+function selectVehicle(vehicleType) {
+    console.log(`Izbrano intervencijsko vozilo: ${vehicleType}`);
+    selectedVehicle = vehicleType;
+}
+
+window.setDirection = setDirection;
+// Izberi smer s katere se približuje intervencijsko vozilo
+function setDirection(direction) {
+    console.log(`Intervencijsko vozilo se približuje s strani: ${direction}`);
+    selectedDirection = direction;
+}
+
+window.setScenario = setScenario;
+// Nastavi scenarij (npr. dež, avtocesta, prazna/samotna cesta...)
+function setScenario(scenario) {
+    console.log(`Izbrani scenarij: ${scenario}`);
+    selectedScenario = scenario;
+}
+
+window.closeMenu = closeMenu;
+function closeMenu() {
+    document.getElementById("popupMenu").style.display = "none";
+}
+
+window.toggleRain = toggleRain;
+function toggleRain() {
+    dezEnabled = !dezEnabled;
+    console.log(`Dež je ${dezEnabled ? 'vklopljen' : 'izklopljen'}`);
+}
 
 
+// Funkcija za začetek simulacije
+function startSimulation() {
+    // Preveri, ali so vsi parametri nastavljeni
+    if (!selectedVehicle || !selectedDirection || !selectedScenario) {
+        alert("Prosimo, nastavi vse parametre (vozilo, smer, scenarij) v Main Menu ('esc' ali 'M') pred začetkom simulacije.");
+        return;  // Prekini začetek simulacije, če niso vsi parametri nastavljeni
+    }
 
+    simulationRunning = true;
+    console.log("Simulacija se je začela!");
 
+    // Nalaganje modelov
+    setScenarioEnvironment();
+    loadSounds();
+
+    // Tukaj lahko dodaš dodatno kodo za zagon simulacije, kot so premikanje modelov, zagon animacij itd.
+    //animate();
+}
+
+function animate() {
+    // Tukaj lahko dodaš svojo logiko za animacijo, ki se bo izvajala, ko je simulacija aktivna
+    renderer.render(scene, camera);
+}
 
 // function animate() {
 
