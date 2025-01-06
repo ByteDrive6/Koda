@@ -320,7 +320,7 @@ let modelGasilski; // ta se zdaj privzeto prikazuje, mormo se uredit za vozila
 loader.load('gasilskiAvto.glb', function (gltf) {
     modelGasilski = gltf.scene;
     modelGasilski.scale.set(1, 1, 1);
-    modelGasilski.position.set(-20, 1, 0);
+    modelGasilski.position.set(-20, 1, -7);
     modelGasilski.renderOrder = 2;
     scene.add(modelGasilski);
 }, undefined, function (error) {
@@ -338,6 +338,11 @@ function animate() {
     // Animacija mesta (križišča in zgradbe)
     if (scene.userData.animateCity) {
         scene.userData.animateCity();
+    }
+
+    // Animacija avtoceste
+    if (scene.userData.animateHighway) {
+        scene.userData.animateHighway();
     }
 
     // Animacija modela gasilskega vozila
