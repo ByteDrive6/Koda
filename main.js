@@ -335,6 +335,11 @@ function animate() {
         scene.userData.animateTrees(); 
     }
 
+    // Animacija mesta (križišča in zgradbe)
+    if (scene.userData.animateCity) {
+        scene.userData.animateCity();
+    }
+
     // Animacija modela gasilskega vozila
     if (modelGasilski) {
         modelGasilski.position.x += 0.05;
