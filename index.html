@@ -32,20 +32,21 @@
             <span class="close-btn" onclick="closeMenu()">×</span>
             <h2>Main Menu</h2>
             <h3>Izbira intervencijskega vozila</h3>
-            <button onclick="selectVehicle('resevalec')">Reševalno vozilo</button>
-            <button onclick="selectVehicle('gasilci')">Gasilsko vozilo</button>
-            <button onclick="selectVehicle('policija')">Policijsko vozilo</button>
+            <button class="vehicle-button" onclick="selectVehicle('resevalec')">Reševalno vozilo</button>
+            <button class="vehicle-button" onclick="selectVehicle('gasilci')">Gasilsko vozilo</button>
+            <button class="vehicle-button" onclick="selectVehicle('policija')">Policijsko vozilo</button>
             
             <h3>Izbira smeri s katere se intervencijsko vozilo približuje</h3>
-            <button onclick="setDirection('levo')">Levo</button>
-            <button onclick="setDirection('desno')">Desno</button>
-            <button onclick="setDirection('spredaj')">Spredaj</button>
-            <button onclick="setDirection('zadaj')">Zadaj</button>
+            <button class="direction-button" onclick="setDirection('levo')">Levo</button>
+            <button class="direction-button" onclick="setDirection('desno')">Desno</button>
+            <button class="direction-button" onclick="setDirection('spredaj')">Spredaj</button>
+            <button class="direction-button" onclick="setDirection('zadaj')">Zadaj</button>
             
             <h3>Izbira scenarija</h3>
-            <button onclick="setScenario('avtocesta')">Avtocesta</button>
-            <button onclick="setScenario('prazna')">Samotna cesta</button>
-            <button onclick="setScenario('mesto')">Mesto</button>
+            <button class="scenario-button" onclick="setScenario('avtocesta')">Avtocesta</button>
+            <button class="scenario-button" onclick="setScenario('prazna')">Samotna cesta</button>
+            <button class="scenario-button" onclick="setScenario('mesto')">Mesto</button>
+            
 
             <div class="switch-container">
                <label class="switch">
@@ -57,6 +58,9 @@
 
             <div class="help-btn-container">
                <button onclick="showHelp()">Help</button>
+            </div>
+            <div class="submit-btn-container">
+               <button onclick="submit()">Submit</button>
             </div>
          </div>
      </div>

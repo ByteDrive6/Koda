@@ -33,13 +33,38 @@
     cursor: pointer;
 }
 
-.popup-menu button {
-margin: 5px 0;
+.popup-menu {
+    /*display: none; /* Privzeto je meni skrit */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
 }
 
 /* Position the help button at the bottom of the menu */
 .help-btn-container {
     margin-top: auto;
+}
+
+.submit-btn-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px; 
+    width: 50; 
+    justify-content: center;  
+    align-items: center;  
+}
+
+#submit-btn {
+    background-color: #007BFF; 
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
 .popup-content h2, .popup-content h3, .popup-content button {
@@ -66,6 +91,15 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+button.selected {
+    background-color: #0056b3; 
+    color: white;
+    font-weight: bold;
+    border: 2px solid #003b80;
+}
+
+
 
 /* Stilizacija za stikalo */
 .switch-container {

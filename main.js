@@ -1,27 +1,23 @@
 import * as THREE from './node_modules/three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
-import { CSS3DRenderer } from './node_modules/three/examples/jsm/renderers/CSS3DRenderer.js';
-import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';  // Add this line
-
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
-scene.background = null; 
+scene.background = null;
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 0.7, 5);
-
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-const light = new THREE.DirectionalLight(0xffffff, 1); 
+const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(0, 0, 10);
 light.castShadow = true;
 scene.add(light);
 
-const renderer = new THREE.WebGLRenderer({ alpha: true }); 
-
+const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setClearColor(0x0000ff, 0);
-
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -31,136 +27,22 @@ const height = container.offsetHeight;
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
-/*
-// OrbitControls - za kamero
+// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; 
+controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.minDistance = 1; 
-controls.maxDistance = 50; 
-controls.target.set(0, 0, 0); 
+controls.minDistance = 1;
+controls.maxDistance = 50;
+controls.target.set(0, 0, 0);
 controls.update();
 
-const loader = new GLTFLoader(); 
-
-// ozadje
-let backgroundModel;
-loader.load('ozadje.glb', function (gltf) {
-    backgroundModel = gltf.scene;
-    backgroundModel.scale.set(4, 2, -1);
-    backgroundModel.position.set(-18, -3, -400);
-    scene.add(backgroundModel);
-}, undefined, function (error) {
-    console.error(error);
+window.addEventListener('resize', () => {
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
 });
-
-
-let treeModel; // iz spleta model
-loader.load('tree.glb', function (gltf) {
-    treeModel = gltf.scene;
-    treeModel.scale.set(7, 3, -1);
-    treeModel.position.set(60, 3, -100);
-    scene.add(treeModel);
-}, undefined, function (error) {
-    console.error(error);
-});
-
-let modelPlosca;
-loader.load('armaturna_plosca.glb', function (gltf) {
-    modelPlosca = gltf.scene;
-    modelPlosca.scale.set(19, 10, 10); 
-    modelPlosca.position.set(-1.9, -1.7, 0.3); 
-    modelPlosca.renderOrder = 1;
-    scene.add(modelPlosca);
-}, undefined, function (error) {
-    console.error(error);
-});
-
-
-let modelGasilski;
-loader.load('gasilskiAvto.glb', function (gltf) {
-    modelGasilski = gltf.scene;
-    modelGasilski.scale.set(1, 1, 1); 
-    modelGasilski.position.set(-20, 1, 0); 
-    modelGasilski.renderOrder = 2;
-    scene.add(modelGasilski);
-}, undefined, function (error) {
-    console.error(error);
-});
-
-function animate() {
-    if (treeModel) {
-        treeModel.position.z += 0.5; 
-    }
-
-    if (modelGasilski) {
-        modelGasilski.position.x += 0.04;
-        modelGasilski.position.z -= 0.07;
-        modelGasilski.scale.multiplyScalar(0.995);
-
-        if (modelGasilski.scale.x < 0.15) {
-            scene.remove(modelGasilski);
-            modelGasilski = null;
-        }
-    }
-    controls.update(); // OrbitControls
-    renderer.render(scene, camera);
-}
-renderer.setAnimationLoop(animate);
-
-// Lahko bi uporabile to kot eno funkcijo za nalaganje modelov intervencijskih vozil:
-function loadModels() {
-    const loader = new GLTFLoader();
-    
-    if (selectedVehicle === "resevalec") {
-        // Nalaganje modela reševalnega vozila
-        loader.load('resevalec.glb', function (gltf) {
-            const model = gltf.scene;
-            model.scale.set(1, 1, 1);
-            model.position.set(0, 0, 0);
-            scene.add(model);
-        });
-    } else if (selectedVehicle === "gasilci") {
-        // Nalaganje modela gasilskega vozila
-        loader.load('gasilci.glb', function (gltf) {
-            const model = gltf.scene;
-            model.scale.set(1, 1, 1);
-            model.position.set(0, 0, 0);
-            scene.add(model);
-        });
-        
-    } else if (selectedVehicle === "policija") {
-        // Nalaganje modela policijskega vozila
-        loader.load('policija.glb', function (gltf) {
-            const model = gltf.scene;
-            model.scale.set(1, 1, 1);
-            model.position.set(0, 0, 0);
-            scene.add(model);
-        });
-    }
-}*/
-
-// Funkcija za nastavitev scenarija
-function setScenarioEnvironment() {
-    if (selectedScenario === "avtocesta") {
-        // Nastavi avtocesto
-        console.log("Nastavljena avtocesta.");
-        // Dodadamo okolje avtoceste
-    } else if (selectedScenario === "prazna") {
-        // Nastavi samotno cesto
-        console.log("Nastavljena samotna cesta.");
-        // Dodaj modele dreves in prazno cesto - ubistvu že imamo to
-    } else if (selectedScenario === "mesto") {
-        // Nastavi mesto - pomojem lahko tisto z interneta
-        console.log("Nastavljeno mesto.");
-    }
-
-    if (dezEnabled === true) {
-        // Dodaj simulacijo dežnih kapljic na izbran scenarij
-        console.log("Dodana simulacija dežnih kapljic.");
-        // Lahko dodamo padanje dežnih kapljic na vetrobransko steklo - eni sošolci imajo to implementacijo
-    }
-}
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let audioBuffer = null;
@@ -288,17 +170,8 @@ function loadSounds() {
 }
 
 
-
-window.addEventListener('resize', () => {
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-});
-
 // Simulacija - spremljamo, ali je aktivna
-let simulationRunning = false;
+let simulationRunning = false; // Simulacija je privzeto ustavljena
 // Parametri, ki so potrebni za simulacijo
 let selectedVehicle = null;
 let selectedDirection = null;
@@ -322,8 +195,99 @@ function toggleMainMenu() {
     mainMenuVisible = !mainMenuVisible;
     const menu = document.getElementById("popupMenu");
     menu.style.display = mainMenuVisible ? "block" : "none";
-    if (mainMenuVisible) {
-        document.getElementById("help").style.display = "none";
+}
+
+window.toggleRain = toggleRain;
+function toggleRain() {
+    dezEnabled = !dezEnabled;
+    console.log(`Dež je ${dezEnabled ? 'vklopljen' : 'izklopljen'}`);
+}
+
+
+// tukaj je za vsako kategorijo da zberes en scenarij trenutno
+window.selectVehicle = selectVehicle;
+function selectVehicle(vehicleType) {
+    console.log(`Izbrano intervencijsko vozilo: ${vehicleType}`);
+    selectedVehicle = vehicleType;
+
+    const vehicleButtons = document.querySelectorAll("#popupMenu .vehicle-button");
+    vehicleButtons.forEach(button => button.classList.remove("selected"));
+
+    const currentButton = event.target;
+    currentButton.classList.add("selected");
+}
+
+window.setDirection = setDirection;
+function setDirection(direction) {
+    console.log(`Intervencijsko vozilo se približuje s strani: ${direction}`);
+    selectedDirection = direction;
+
+    const directionButtons = document.querySelectorAll("#popupMenu .direction-button");
+    directionButtons.forEach(button => button.classList.remove("selected"));
+
+    const currentButton = event.target;
+    currentButton.classList.add("selected");
+}
+
+window.setScenario = setScenario;
+function setScenario(scenario) {
+    console.log(`Izbrani scenarij: ${scenario}`);
+    selectedScenario = scenario;
+
+    const scenarioButtons = document.querySelectorAll("#popupMenu .scenario-button");
+    scenarioButtons.forEach(button => button.classList.remove("selected"));
+
+    const currentButton = event.target;
+    currentButton.classList.add("selected");
+}
+
+// dodala sem submit button
+window.submit = submit;
+function submit() {
+    if (!selectedVehicle || !selectedDirection || !selectedScenario) {
+        alert("Prosimo, izberi vozilo, smer in scenarij, preden pritisneš Submit.");
+        return;
+    }
+
+    console.log(`Izbrano vozilo: ${selectedVehicle}`);
+    console.log(`Izbrana smer: ${selectedDirection}`);
+    console.log(`Izbrani scenarij: ${selectedScenario}`);
+
+    loadScenario(selectedScenario);
+    hideMenu();
+
+    simulationRunning = true;
+    console.log("Simulacija je začela teči.");
+}
+
+function hideMenu() {
+    const menu = document.getElementById("popupMenu");
+    menu.style.display = "none";
+    mainMenuVisible = false;
+}
+
+// Funkcija za nastavitev scenarija
+async function loadScenario(scenario) {
+    try {
+        console.log(`Nalagam scenarij: ${scenario}`);
+        switch (scenario) {
+            case "avtocesta":
+                const { setupHighwayScene } = await import('./scenariji/avtocesta.js');
+                setupHighwayScene(scene);
+                break;
+            case "prazna":
+                const { setupEmptyRoadScene } = await import('./scenariji/samotna_cesta.js');
+                setupEmptyRoadScene(scene);
+                break;
+            case "mesto":
+                const { setupCityScene } = await import('./scenariji/mesto.js');
+                setupCityScene(scene);
+                break;
+            default:
+                console.error("Neznan scenarij!");
+        }
+    } catch (error) {
+        console.error("Napaka pri nalaganju scenarija:", error);
     }
 }
 
@@ -339,58 +303,53 @@ function closeHelp() {
     document.getElementById("popupMenu").style.display = "block";
 }
 
-window.selectVehicle = selectVehicle;
-// Izberi vozilo
-function selectVehicle(vehicleType) {
-    console.log(`Izbrano intervencijsko vozilo: ${vehicleType}`);
-    selectedVehicle = vehicleType;
-}
+const loader = new GLTFLoader();
 
-window.setDirection = setDirection;
-// Izberi smer s katere se približuje intervencijsko vozilo
-function setDirection(direction) {
-    console.log(`Intervencijsko vozilo se približuje s strani: ${direction}`);
-    selectedDirection = direction;
-}
+let modelPlosca; // to kar naj tu ostane
+loader.load('armaturna_plosca.glb', function (gltf) {
+    modelPlosca = gltf.scene;
+    modelPlosca.scale.set(19, 10, 10);
+    modelPlosca.position.set(-1.9, -1.7, 0.3);
+    modelPlosca.renderOrder = 1;
+    scene.add(modelPlosca);
+}, undefined, function (error) {
+    console.error(error);
+});
 
-window.setScenario = setScenario;
-// Nastavi scenarij (npr. dež, avtocesta, prazna/samotna cesta...)
-function setScenario(scenario) {
-    console.log(`Izbrani scenarij: ${scenario}`);
-    selectedScenario = scenario;
-}
+let modelGasilski; // ta se zdaj privzeto prikazuje, mormo se uredit za vozila
+loader.load('gasilskiAvto.glb', function (gltf) {
+    modelGasilski = gltf.scene;
+    modelGasilski.scale.set(1, 1, 1);
+    modelGasilski.position.set(-20, 1, 0);
+    modelGasilski.renderOrder = 2;
+    scene.add(modelGasilski);
+}, undefined, function (error) {
+    console.error(error);
+});
 
-window.closeMenu = closeMenu;
-function closeMenu() {
-    document.getElementById("popupMenu").style.display = "none";
-}
+function animate() {
+    if (!simulationRunning) return; // Pavza
 
-window.toggleRain = toggleRain;
-function toggleRain() {
-    dezEnabled = !dezEnabled;
-    console.log(`Dež je ${dezEnabled ? 'vklopljen' : 'izklopljen'}`);
-}
-
-
-// Funkcija za začetek simulacije
-function startSimulation() {
-    // Preveri, ali so vsi parametri nastavljeni
-    if (!selectedVehicle || !selectedDirection || !selectedScenario) {
-        alert("Prosimo, nastavi vse parametre (vozilo, smer, scenarij) v Main Menu ('esc' ali 'M') pred začetkom simulacije.");
-        return;
+    // Animacija dreves za samotno cesto
+    if (scene.userData.animateTrees) {
+        scene.userData.animateTrees(); 
     }
 
-    simulationRunning = true;
-    console.log("Simulacija se je začela!");
+    // Animacija modela gasilskega vozila
+    if (modelGasilski) {
+        modelGasilski.position.x += 0.05;
+        modelGasilski.position.z -= 0.07;
+        modelGasilski.scale.multiplyScalar(0.995);
+        if (modelGasilski.scale.x < 0.15) {
+            scene.remove(modelGasilski);
+            modelGasilski = null;
+        }
+    }
 
-    // Nalaganje modelov
-    setScenarioEnvironment();
-    loadSounds(); // Naloži in predvajaj
-
-    // Tukaj lahko damo dodatno kodo za zagon simulacije, kot so premikanje modelov, zagon animacij itd.
-    //animate();
+    renderer.render(scene, camera);
 }
 
+renderer.setAnimationLoop(animate);
 
 //function animate() {
     // Tukaj lahko dodamo svojo logiko za animacijo, ki se bo izvajala, ko je simulacija aktivna
