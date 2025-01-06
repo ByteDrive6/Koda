@@ -377,7 +377,7 @@ function startSimulation() {
     // Preveri, ali so vsi parametri nastavljeni
     if (!selectedVehicle || !selectedDirection || !selectedScenario) {
         alert("Prosimo, nastavi vse parametre (vozilo, smer, scenarij) v Main Menu ('esc' ali 'M') pred začetkom simulacije.");
-        return;  // Prekini začetek simulacije, če niso vsi parametri nastavljeni
+        return;
     }
 
     simulationRunning = true;
