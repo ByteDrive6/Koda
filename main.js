@@ -162,43 +162,34 @@ function setScenarioEnvironment() {
     }
 }
 
-// Initialize the AudioContext and AudioLoader
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-// Create or resume the AudioContext after user gesture
-document.body.addEventListener('click', () => {
-    if (audioContext.state === 'suspended') {
-        audioContext.resume().then(() => {
-            console.log('AudioContext resumed after user gesture');
-        });
-    }
-});
 let audioBuffer = null;
 
-// Function to load the audio file
+// Funkcija za nalaganje zvočnega posnetka
 function loadAudioFile(url) {
-    console.log("Loading audio from:", url); // Log the URL for debugging
+    console.log("Nalaganje posnetka z:", url); 
     fetch(url)
         .then(response => response.arrayBuffer())
         .then(data => audioContext.decodeAudioData(data))
         .then(buffer => {
             audioBuffer = buffer;
-            console.log('Audio loaded successfully');
-            playAudio(); // Call playAudio once the audio is loaded
+            console.log('Posnetek uspešno naložen');
+            playAudio();
         })
         .catch(error => {
             console.error('Error loading audio:', error);
         });
 }
-// Function to play the audio
+// Funkcija za predvajanje zvočnega ponsetka
 function playAudio() {
     if (audioBuffer) {
         const audioSource = audioContext.createBufferSource();
         audioSource.buffer = audioBuffer;
         audioSource.connect(audioContext.destination);
         audioSource.start();
-        console.log('Audio is playing');
+        console.log('Zvočni posnetek se predvaja');
     } else {
-        console.error('Audio not loaded yet');
+        console.error('Zvočni posnetek še ni naložen');
     }
 }
 
@@ -394,18 +385,17 @@ function startSimulation() {
 
     // Nalaganje modelov
     setScenarioEnvironment();
-    loadSounds();
+    loadSounds(); // Naloži in predvajaj
 
-    playAudio();
-
-    // Tukaj lahko dodaš dodatno kodo za zagon simulacije, kot so premikanje modelov, zagon animacij itd.
+    // Tukaj lahko damo dodatno kodo za zagon simulacije, kot so premikanje modelov, zagon animacij itd.
     //animate();
 }
 
-function animate() {
-    // Tukaj lahko dodaš svojo logiko za animacijo, ki se bo izvajala, ko je simulacija aktivna
-    renderer.render(scene, camera);
-}
+
+//function animate() {
+    // Tukaj lahko dodamo svojo logiko za animacijo, ki se bo izvajala, ko je simulacija aktivna
+//    renderer.render(scene, camera);
+//}
 
 // function animate() {
 
