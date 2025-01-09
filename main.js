@@ -254,6 +254,7 @@ function submit() {
     console.log(`Izbrani scenarij: ${selectedScenario}`);
 
     loadScenario(selectedScenario);
+    loadVehicleModel(selectedVehicle);
     hideMenu();
 
     simulationRunning = true;
@@ -265,6 +266,57 @@ function hideMenu() {
     menu.style.display = "none";
     mainMenuVisible = false;
 }
+
+function loadVehicleModel(vehicleType) {
+    const vehiclePaths = {
+        resevalec: 'resevalnoVozilo.glb',
+        gasilci: 'gasilskiAvto.glb', 
+        policija: 'policijskiAvto.glb',
+    };
+
+    // pot do datoteke
+    const modelPath = vehiclePaths[vehicleType];
+    if (!modelPath) {
+        console.error("Neznano vozilo:", vehicleType);
+        return;
+    }
+
+    if (scene.userData.currentVehicleModel) {
+        scene.remove(scene.userData.currentVehicleModel);
+        scene.userData.currentVehicleModel = null;
+    }
+
+    // nov model
+    const loader = new GLTFLoader();
+    loader.load(modelPath, function (gltf) {
+        const vehicleModel = gltf.scene;
+        vehicleModel.scale.set(1, 1, 1);
+        vehicleModel.position.set(0, 0, 0); // to je acetna pozicija, pol jo moramo urejat glede an smer
+        scene.add(vehicleModel);
+
+        // shranimo, da g alahko odstranimo potem
+        scene.userData.currentVehicleModel = vehicleModel;
+
+        console.log(`Model za ${vehicleType} uspešno naložen.`);
+    }, undefined, function (error) {
+        console.error("Napaka pri nalaganju modela vozila:", error);
+    });
+}
+
+window.setVehicle = function (vehicleType) {
+    console.log(`Izbrano vozilo: ${vehicleType}`);
+    selectedVehicle = vehicleType;
+
+    const vehicleButtons = document.querySelectorAll("#popupMenu .vehicle-button");
+    vehicleButtons.forEach(button => button.classList.remove("selected"));
+
+    const currentButton = event.target;
+    currentButton.classList.add("selected");
+
+    loadVehicleModel(vehicleType);
+};
+
+
 
 // Funkcija za nastavitev scenarija
 async function loadScenario(scenario) {
@@ -343,6 +395,11 @@ function animate() {
     // Animacija avtoceste
     if (scene.userData.animateHighway) {
         scene.userData.animateHighway();
+    }
+
+    const vehicleModel = scene.userData.currentVehicleModel;
+    if (vehicleModel) {
+        vehicleModel.position.z -= 0.05; 
     }
 
     // Animacija modela gasilskega vozila
