@@ -26,17 +26,26 @@ export async function loadScenario(scenario, scene) {
 }
 
 // Funkcija za nalaganje modela vozila
-export function loadVehicleModel(vehicleType, scene) {
+export function loadVehicleModel(vehicleType, scene, direction) {
     const vehiclePaths = {
         resevalec: 'resevalnoVozilo.glb',
         gasilci: 'gasilskiAvto.glb',
         policija: 'policijskiAvto.glb',
     };
 
-    // Pot do datoteke
+    const directionPositions = { // generira pozicije
+        levo: { x: -50, y: 0, z: 0, rotationY: Math.PI / 2 }, 
+        desno: { x: 50, y: 0, z: 0, rotationY: -Math.PI / 2 }, 
+        spredaj: { x: 0, y: 0, z: -50, rotationY: 0 }, 
+        zadaj: { x: 0, y: 0, z: 50, rotationY: Math.PI },
+    };
+    
+
     const modelPath = vehiclePaths[vehicleType];
-    if (!modelPath) {
-        console.error("Neznano vozilo:", vehicleType);
+    const position = directionPositions[direction];
+
+    if (!modelPath || !position) {
+        console.error("Napaka: Neznano vozilo ali smer.");
         return;
     }
 
@@ -45,19 +54,20 @@ export function loadVehicleModel(vehicleType, scene) {
         scene.userData.currentVehicleModel = null;
     }
 
-    // Nov model
     const loader = new GLTFLoader();
     loader.load(modelPath, function (gltf) {
         const vehicleModel = gltf.scene;
         vehicleModel.scale.set(1, 1, 1);
-        vehicleModel.position.set(0, 0, 0);
+        vehicleModel.position.set(position.x, position.y, position.z);
+        vehicleModel.rotation.y = position.rotationY;
+
         scene.add(vehicleModel);
 
-        // Shranimo model, da ga lahko odstranimo kasneje
         scene.userData.currentVehicleModel = vehicleModel;
 
-        console.log(`Model za ${vehicleType} uspešno naložen.`);
+        console.log(`Model za ${vehicleType} iz smeri ${direction} uspešno naložen.`);
     }, undefined, function (error) {
         console.error("Napaka pri nalaganju modela vozila:", error);
     });
 }
+

@@ -15,16 +15,6 @@ const height = container.offsetHeight;
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
-/*// OrbitControls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 1;
-controls.maxDistance = 50;
-controls.target.set(0, 0, 0);
-controls.update();
-*/
-
 const controls = setupControls(camera, renderer);
 
 window.addEventListener('resize', () => {
@@ -120,7 +110,7 @@ function submit() {
 
     loadSounds(dezEnabled, selectedScenario, selectedVehicle);
     loadScenario(selectedScenario, scene);
-    loadVehicleModel(selectedVehicle, scene);
+    loadVehicleModel(selectedVehicle, scene, selectedDirection);
 
     hideMenu();
 
@@ -192,8 +182,21 @@ function animate() {
     }
 
     const vehicleModel = scene.userData.currentVehicleModel;
-    if (vehicleModel) {
-        vehicleModel.position.z -= 0.05; 
+    if (vehicleModel) { //smer premikanja
+        switch (selectedDirection) {
+            case "levo":
+                vehicleModel.position.x += 0.5; 
+                break;
+            case "desno":
+                vehicleModel.position.x -= 0.5; 
+                break;
+            case "spredaj":
+                vehicleModel.position.z += 0.5; 
+                break;
+            case "zadaj":
+                vehicleModel.position.z -= 0.5; 
+                break;
+        }
     }
 
     renderer.render(scene, camera);
