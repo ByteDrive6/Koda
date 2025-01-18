@@ -4,6 +4,7 @@ import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitC
 import { setupScene } from './sceneSetup.js';
 import { loadSounds } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
+import { setupControls } from './controls.js';
 
 
 const { scene, camera, renderer } = setupScene();
@@ -14,7 +15,7 @@ const height = container.offsetHeight;
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
-// OrbitControls
+/*// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
@@ -22,6 +23,9 @@ controls.minDistance = 1;
 controls.maxDistance = 50;
 controls.target.set(0, 0, 0);
 controls.update();
+*/
+
+const controls = setupControls(camera, renderer);
 
 window.addEventListener('resize', () => {
     const width = container.offsetWidth;
@@ -130,43 +134,6 @@ function hideMenu() {
     mainMenuVisible = false;
 }
 
-/*function loadVehicleModel(vehicleType) {
-    const vehiclePaths = {
-        resevalec: 'resevalnoVozilo.glb',
-        gasilci: 'gasilskiAvto.glb', 
-        policija: 'policijskiAvto.glb',
-    };
-
-    // pot do datoteke
-    const modelPath = vehiclePaths[vehicleType];
-    if (!modelPath) {
-        console.error("Neznano vozilo:", vehicleType);
-        return;
-    }
-
-    if (scene.userData.currentVehicleModel) {
-        scene.remove(scene.userData.currentVehicleModel);
-        scene.userData.currentVehicleModel = null;
-    }
-
-    // nov model
-    const loader = new GLTFLoader();
-    loader.load(modelPath, function (gltf) {
-        const vehicleModel = gltf.scene;
-        vehicleModel.scale.set(1, 1, 1);
-        vehicleModel.position.set(0, 0, 0); // to je acetna pozicija, pol jo moramo urejat glede an smer
-        scene.add(vehicleModel);
-
-        // shranimo, da g alahko odstranimo potem
-        scene.userData.currentVehicleModel = vehicleModel;
-
-        console.log(`Model za ${vehicleType} uspešno naložen.`);
-    }, undefined, function (error) {
-        console.error("Napaka pri nalaganju modela vozila:", error);
-    });
-}
- */
-
 window.setVehicle = function (vehicleType) {
     console.log(`Izbrano vozilo: ${vehicleType}`);
     selectedVehicle = vehicleType;
@@ -180,32 +147,6 @@ window.setVehicle = function (vehicleType) {
     loadVehicleModel(vehicleType);
 };
 
-
-
-/*// Funkcija za nastavitev scenarija
-async function loadScenario(scenario) {
-    try {
-        console.log(`Nalagam scenarij: ${scenario}`);
-        switch (scenario) {
-            case "avtocesta":
-                const { setupHighwayScene } = await import('./scenariji/avtocesta.js');
-                setupHighwayScene(scene);
-                break;
-            case "prazna":
-                const { setupEmptyRoadScene } = await import('./scenariji/samotna_cesta.js');
-                setupEmptyRoadScene(scene);
-                break;
-            case "mesto":
-                const { setupCityScene } = await import('./scenariji/mesto.js');
-                setupCityScene(scene);
-                break;
-            default:
-                console.error("Neznan scenarij!");
-        }
-    } catch (error) {
-        console.error("Napaka pri nalaganju scenarija:", error);
-    }
-} */
 
 window.showHelp = showHelp;
 function showHelp() {
@@ -232,17 +173,6 @@ loader.load('armaturna_plosca.glb', function (gltf) {
     console.error(error);
 });
 
-/*let modelGasilski; // ta se zdaj privzeto prikazuje, mormo se uredit za vozila
-loader.load('gasilskiAvto.glb', function (gltf) {
-    modelGasilski = gltf.scene;
-    modelGasilski.scale.set(1, 1, 1);
-    modelGasilski.position.set(-20, 1, -7);
-    modelGasilski.renderOrder = 2;
-    scene.add(modelGasilski);
-}, undefined, function (error) {
-    console.error(error);
-}); */
-
 function animate() {
     if (!simulationRunning) return; // Pavza
 
@@ -265,17 +195,6 @@ function animate() {
     if (vehicleModel) {
         vehicleModel.position.z -= 0.05; 
     }
-
-/*    // Animacija modela gasilskega vozila
-    if (modelGasilski) {
-        modelGasilski.position.x += 0.05;
-        modelGasilski.position.z -= 0.07;
-        modelGasilski.scale.multiplyScalar(0.995);
-        if (modelGasilski.scale.x < 0.15) {
-            scene.remove(modelGasilski);
-            modelGasilski = null;
-        }
-    } */
 
     renderer.render(scene, camera);
 }
