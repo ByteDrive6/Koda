@@ -1,8 +1,8 @@
 import * as THREE from './node_modules/three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
-
-const scene = new THREE.Scene();
+import { setupScene } from './sceneSetup.js';
+/*const scene = new THREE.Scene();
 scene.background = null;
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -19,7 +19,8 @@ scene.add(light);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setClearColor(0x0000ff, 0);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;*/ //sceneSetUp
+const { scene, camera, renderer } = setupScene();
 
 const container = document.getElementById('canvas');
 const width = container.offsetWidth;
