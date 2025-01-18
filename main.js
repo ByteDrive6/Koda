@@ -2,6 +2,8 @@ import * as THREE from './node_modules/three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { setupScene } from './sceneSetup.js';
+import { loadSounds } from './audioManager.js';
+//import { loadScenario, loadVehicleModel } from './sceneManager.js';
 
 const { scene, camera, renderer } = setupScene();
 
@@ -28,7 +30,7 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+/*const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let audioBuffer = null;
 
 // Funkcija za nalaganje zvočnega posnetka
@@ -151,7 +153,7 @@ function loadSounds() {
         loadAudioFile('/Zvočni posnetki/Policijske_sirene/posnetek1_2024_7_4_19_11_23.wav')
         console.log("Nalagam zvok vožnje po mestu...");
     }
-}
+} */
 
 
 // Simulacija - spremljamo, ali je aktivna
@@ -238,6 +240,7 @@ function submit() {
     console.log(`Izbrani scenarij: ${selectedScenario}`);
 
     loadScenario(selectedScenario);
+    loadSounds(dezEnabled, selectedScenario, selectedVehicle);
     loadVehicleModel(selectedVehicle);
     hideMenu();
 
