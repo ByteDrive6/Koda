@@ -28,21 +28,28 @@ export async function loadScenario(scenario, scene) {
 // Funkcija za nalaganje modela vozila
 export function loadVehicleModel(vehicleType, scene, direction) {
     const vehiclePaths = {
-        resevalec: 'resevalnoVozilo.glb',
-        gasilci: 'gasilskiAvto.glb',
-        policija: 'policijskiAvto.glb',
+        resevalec: './scenariji/glb_objects/resevalnoVozilo.glb',
+        gasilci: './scenariji/glb_objects/gasilskiAvto.glb',
+        policija: './scenariji/glb_objects/policijskiAvto.glb',
+    };
+
+    const vehicleScales = { // Skale za posamezna vozila
+        resevalec: { x: 1, y: 1, z: 1 }, 
+        gasilci: { x: 1, y: 1, z: 1},
+        policija: { x: 1, y: 1, z: 1 },
     };
 
     const directionPositions = { // generira pozicije
         levo: { x: -50, y: 0, z: 0, rotationY: Math.PI / 2 }, 
         desno: { x: 50, y: 0, z: 0, rotationY: -Math.PI / 2 }, 
-        spredaj: { x: 0, y: 0, z: -50, rotationY: 0 }, 
-        zadaj: { x: 0, y: 0, z: 50, rotationY: Math.PI },
+        spredaj: { x: -10, y: 0, z: -50, rotationY: 0 }, 
+        zadaj: { x: -10, y: 0, z: 50, rotationY: Math.PI },
     };
     
 
     const modelPath = vehiclePaths[vehicleType];
     const position = directionPositions[direction];
+    const scale = vehicleScales[vehicleType] || { x: 1, y: 1, z: 1 };
 
     if (!modelPath || !position) {
         console.error("Napaka: Neznano vozilo ali smer.");
@@ -57,9 +64,16 @@ export function loadVehicleModel(vehicleType, scene, direction) {
     const loader = new GLTFLoader();
     loader.load(modelPath, function (gltf) {
         const vehicleModel = gltf.scene;
-        vehicleModel.scale.set(1, 1, 1);
+        vehicleModel.scale.set(scale.x, scale.y, scale.z);
         vehicleModel.position.set(position.x, position.y, position.z);
         vehicleModel.rotation.y = position.rotationY;
+
+        vehicleModel.rotation.y = position.rotationY;
+
+        // gasilsko vozilo sem samo mogla za 180 obrnit ker se mi je nalagalo v drugo smer
+        if (vehicleType === "gasilci") {
+            vehicleModel.rotation.y += Math.PI;
+        }
 
         scene.add(vehicleModel);
 

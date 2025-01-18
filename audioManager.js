@@ -2,7 +2,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let audioBuffer = null;
 
 // Funkcija za nalaganje zvočnega posnetka
-export function loadAudioFile(url) {
+function loadAudioFile(url) {
     console.log("Nalaganje posnetka z:", url); 
     fetch(url)
         .then(response => response.arrayBuffer())
@@ -31,6 +31,7 @@ function playAudio() {
 
 // Funkcija za nalaganje zvokov
 export function loadSounds(dezEnabled, selectedScenario, selectedVehicle) {
+    loadSirenTimesForType(selectedVehicle);
     if (dezEnabled === true && selectedScenario === "avtocesta" && selectedVehicle === "resevalec") {
         // Nalagaj zvok dežja in avtoceste
         loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek5_2024_6_4_16_13_34.wav');
@@ -125,3 +126,66 @@ export function loadSounds(dezEnabled, selectedScenario, selectedVehicle) {
         console.log ("nisem uspel nalozit sounda")
     }
 }
+
+function loadSirenTimesForType(selectedVehicle) {
+    const vehicleType = {
+        resevalec: './Zvočni posnetki/Resevalne_sirene/casiSirene.txt',
+        gasilci: './Zvočni posnetki/Gasilske_sirene/casiSirene.txt',
+        policija: './Zvočni posnetki/Policijske_sirene/casiSirene.txt',
+    };
+    
+    const selectedVehiclePath = vehicleType[selectedVehicle];
+    
+    if (!selectedVehiclePath) {
+        console.error(`Neveljaven tip vozila: ${selectedVehicle}`);
+        return;
+    }
+    
+    console.log(`Nalagam čase siren iz datoteke: ${selectedVehiclePath}`);
+    
+    fetch(selectedVehiclePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Napaka pri nalaganju datoteke: ${response.statusText}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            const sirenTimes = parseSirenTimes(data);
+            if (sirenTimes.length === 0) {
+                console.warn(`Datoteka ${selectedVehiclePath} je prazna ali nima veljavnih vrstic.`);
+            } else {
+                sirenTimes.forEach(({ startTime, endTime }) => {
+                    console.log(`${startTime}s - ${endTime}s`);
+                });
+            }
+        })
+        .catch(error => {
+            console.error(`Napaka pri nalaganju časov siren za ${selectedVehicle}:`, error);
+        });
+}
+
+// za razclenjevanje
+function parseSirenTimes(data) {
+    console.log("Vsebina datoteke:", data); 
+    const lines = data.split("\n").filter(line => line.trim() !== ""); // Odstranimo prazne vrstice
+    return lines.map(line => {
+        const parts = line.split(": "); // Razdeli vrstico na ime in čase
+        if (parts.length < 2) {
+            console.warn(`Preskakovanje neveljavne vrstice: ${line}`);
+            return null; 
+        }
+        const times = parts[1]?.replace(/s/g, "").split(" - "); // Odstranimo "s" in razdelimo čase
+        if (!times || times.length < 2) {
+            console.warn(`Neveljavni časi v vrstici: ${line}`);
+            return null; // Preskoči, če ni časov
+        }
+        const [startTime, endTime] = times.map(Number);
+        if (isNaN(startTime) || isNaN(endTime)) {
+            console.warn(`Časi niso številski: ${line}`);
+            return null; // Preskoči, če časi niso številski
+        }
+        return { startTime, endTime }; 
+    }).filter(entry => entry !== null); // Odstrani neveljavne vnose
+}
+
