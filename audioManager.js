@@ -31,103 +31,133 @@ function playAudio() {
 
 // Funkcija za nalaganje zvokov
 export function loadSounds(dezEnabled, selectedScenario, selectedVehicle) {
-    loadSirenTimesForType(selectedVehicle);
+    let wavFileName = ""; // Spremenljivka za ime WAV datoteke
+
+    // Preveri scenarij in izberi ustrezno WAV datoteko
     if (dezEnabled === true && selectedScenario === "avtocesta" && selectedVehicle === "resevalec") {
-        // Nalagaj zvok dežja in avtoceste
-        loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek5_2024_6_4_16_13_34.wav');
-        console.log("Nalagam zvok dežja na avtocesti...");
+        // Nalagaj zvok dežja in avtoceste za reševalno vozilo
+        wavFileName = 'posnetek5_2024_6_4_16_13_34.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja na avtocesti za reševalce...");
     } 
     else if (dezEnabled === true && selectedScenario === "avtocesta" && selectedVehicle === "gasilci") {
-        // Nalagaj zvok dežja in avtoceste
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek5_2024_05_04_14_49_04.wav')
-        console.log("Nalagam zvok dežja na avtocesti...");
+        // Nalagaj zvok dežja in avtoceste za gasilce
+        wavFileName = 'posnetek5_2024_05_04_14_49_04.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja na avtocesti za gasilce...");
     } 
     else if (dezEnabled === true && selectedScenario === "avtocesta" && selectedVehicle === "policija") {
-        // Nalagaj zvok dežja in avtoceste
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek5_2024_7_4_19_52_51.wav')
-        console.log("Nalagam zvok dežja na avtocesti...");
+        // Nalagaj zvok dežja in avtoceste za policijo
+        wavFileName = 'posnetek5_2024_7_4_19_52_51.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja na avtocesti za policijo...");
     } 
-    else  if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "resevalec") {
-        // Nalagaj avtocesto brez dežje
-        loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek2_2024_4_4_19_19_33.wav')
-        console.log("Nalagam zvok avtoceste...");
+    else if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "resevalec") {
+        // Nalagaj zvok suhe avtoceste za reševalno vozilo
+        wavFileName = 'posnetek2_2024_4_4_19_19_33.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok avtoceste za reševalce...");
     } 
-    else  if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "gasilci") {
-        // Nalagaj avtocesto brez dežje
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek2_2024_05_04_14_22_18.wav')
-        console.log("Nalagam zvok avtoceste...");
+    else if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "gasilci") {
+        // Nalagaj zvok suhe avtoceste za gasilce
+        wavFileName = 'posnetek2_2024_05_04_14_22_18.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok avtoceste za gasilce...");
     } 
-    else  if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "policija") {
-        // Nalagaj avtocesto brez dežje
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek2_2024_7_4_19_18_55.wav')
-        console.log("Nalagam zvok avtoceste...");
+    else if (dezEnabled === false && selectedScenario === "avtocesta" && selectedVehicle === "policija") {
+        // Nalagaj zvok suhe avtoceste za policijo
+        wavFileName = 'posnetek2_2024_7_4_19_18_55.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok avtoceste za policijo...");
     } 
     else if (dezEnabled === true && selectedScenario === "prazna" && selectedVehicle === "resevalec") {
-        // Nalagaj zvok dežja in vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek6_2024_6_4_16_21_42.wav')
-        console.log("Nalagam zvok dežja in vožnje po samotni cesti...");
+        // Nalagaj zvok dežja in vožnje po samotni cesti za reševalno vozilo
+        wavFileName = 'posnetek6_2024_6_4_16_21_42.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po samotni cesti za reševalce...");
     }
     else if (dezEnabled === true && selectedScenario === "prazna" && selectedVehicle === "gasilci") {
-        // Nalagaj zvok dežja in vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek6_2024_05_04_14_59_34.wav')
-        console.log("Nalagam zvok dežja in vožnje po samotni cesti...");
+        // Nalagaj zvok dežja in vožnje po samotni cesti za gasilce
+        wavFileName = 'posnetek6_2024_05_04_14_59_34.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po samotni cesti za gasilce...");
     }
     else if (dezEnabled === true && selectedScenario === "prazna" && selectedVehicle === "policija") {
-        // Nalagaj zvok dežja in vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek6_2024_7_4_20_01_02.wav')
-        console.log("Nalagam zvok dežja in vožnje po samotni cesti...");
+        // Nalagaj zvok dežja in vožnje po samotni cesti za policijo
+        wavFileName = 'posnetek6_2024_7_4_20_01_02.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po samotni cesti za policijo...");
     }
     else if (dezEnabled === false && selectedScenario === "prazna" && selectedVehicle === "resevalec") {
-        // Nalagaj zvok vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek3_2024_4_4_19_30_45.wav')
-        console.log("Nalagam zvok vožnje po samotni cesti...");
+        // Nalagaj zvok vožnje po samotni cesti za reševalno vozilo
+        wavFileName = 'posnetek3_2024_4_4_19_30_45.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po samotni cesti za reševalce...");
     }
     else if (dezEnabled === false && selectedScenario === "prazna" && selectedVehicle === "gasilci") {
-        // Nalagaj zvok vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek3_2024_05_04_14_30_11.wav')
-        console.log("Nalagam zvok vožnje po samotni cesti...");
+        // Nalagaj zvok vožnje po samotni cesti za gasilce
+        wavFileName = 'posnetek3_2024_05_04_14_30_11.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po samotni cesti za gasilce...");
     }
     else if (dezEnabled === false && selectedScenario === "prazna" && selectedVehicle === "policija") {
-        // Nalagaj zvok vožnje po samotni cesti
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek3_2024_7_4_19_25_34.wav')
-        console.log("Nalagam zvok vožnje po samotni cesti...");
+        // Nalagaj zvok vožnje po samotni cesti za policijo
+        wavFileName = 'posnetek3_2024_7_4_19_25_34.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po samotni cesti za policijo...");
     }
     else if (dezEnabled === true && selectedScenario === "mesto" && selectedVehicle === "resevalec") {
-        // Naloži zvok dežja in vožnje po mestu
-        loadAudioFile('/Zvočni posnetki/Resevalne_sirene/posnetek4_2024_4_4_19_40_05.wav')
-        console.log("Nalagam zvok dežja in vožnje po mestu...");
+        // Nalagaj zvok dežja in vožnje po mestu za reševalno vozilo
+        wavFileName = 'posnetek4_2024_4_4_19_40_05.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po mestu za reševalce...");
     }
     else if (dezEnabled === true && selectedScenario === "mesto" && selectedVehicle === "gasilci") {
-        // Naloži zvok dežja in vožnje po mestu
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek4_2024_05_04_14_41_19.wav')
-        console.log("Nalagam zvok dežja in vožnje po mestu...");
+        // Nalagaj zvok dežja in vožnje po mestu za gasilce
+        wavFileName = 'posnetek4_2024_05_04_14_41_19.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po mestu za gasilce...");
     }
     else if (dezEnabled === true && selectedScenario === "mesto" && selectedVehicle === "policija") {
-        // Naloži zvok dežja in vožnje po mestu
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek4_2024_7_4_19_38_25.wav')
-        console.log("Nalagam zvok dežja in vožnje po mestu...");
+        // Nalagaj zvok dežja in vožnje po mestu za policijo
+        wavFileName = 'posnetek4_2024_7_4_19_38_25.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok dežja in vožnje po mestu za policijo...");
     }
     else if (dezEnabled === false && selectedScenario === "mesto" && selectedVehicle === "resevalec") {
-        // Naloži zvok vožnje po mestu
-        loadAudioFile('./Zvočni posnetki/Resevalne_sirene/posnetek1_2024_4_4_19_13_45.wav')
-        console.log("Nalagam zvok vožnje po mestu...");
+        // Nalagaj zvok vožnje po mestu za reševalno vozilo
+        wavFileName = 'posnetek1_2024_4_4_19_13_45.wav';
+        loadAudioFile(`./Zvočni posnetki/Resevalne_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po mestu za reševalce...");
     }
     else if (dezEnabled === false && selectedScenario === "mesto" && selectedVehicle === "gasilci") {
-        // Naloži zvok vožnje po mestu
-        loadAudioFile('./Zvočni posnetki/Gasilske_sirene/posnetek1_2024_05_04_14_13_33.wav')
-        console.log("Nalagam zvok vožnje po mestu...");
+        // Nalagaj zvok vožnje po mestu za gasilce
+        wavFileName = 'posnetek1_2024_05_04_14_13_33.wav';
+        loadAudioFile(`./Zvočni posnetki/Gasilske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po mestu za gasilce...");
     }
     else if (dezEnabled === false && selectedScenario === "mesto" && selectedVehicle === "policija") {
-        // Naloži zvok vožnje po mestu
-        loadAudioFile('./Zvočni posnetki/Policijske_sirene/posnetek1_2024_7_4_19_11_23.wav')
-        console.log("Nalagam zvok vožnje po mestu...");
+        // Nalagaj zvok vožnje po mestu za policijo
+        wavFileName = 'posnetek1_2024_7_4_19_11_23.wav';
+        loadAudioFile(`./Zvočni posnetki/Policijske_sirene/${wavFileName}`);
+        console.log("Nalagam zvok vožnje po mestu za policijo...");
     }
     else {
-        console.log ("nisem uspel nalozit sounda")
+        // Če scenarij ni ustrezno definiran
+        console.error("Nisem uspel določiti ustreznega zvoka za izbran scenarij in vozilo.");
+    }
+
+    // Če je ime WAV datoteke določeno, naloži ustrezne čase siren zanjo
+    if (wavFileName) {
+        loadSirenTimesForType(selectedVehicle, wavFileName);
+    } else {
+        console.error("Ime WAV datoteke ni določeno ali scenarij ni ustrezno definiran.");
     }
 }
 
-function loadSirenTimesForType(selectedVehicle) {
+
+
+function loadSirenTimesForType(selectedVehicle, wavFileName) {
     const vehicleType = {
         resevalec: './Zvočni posnetki/Resevalne_sirene/casiSirene.txt',
         gasilci: './Zvočni posnetki/Gasilske_sirene/casiSirene.txt',
@@ -141,7 +171,7 @@ function loadSirenTimesForType(selectedVehicle) {
         return;
     }
     
-    console.log(`Nalagam čase siren iz datoteke: ${selectedVehiclePath}`);
+    console.log(`Nalagam čase za ${wavFileName} iz: ${selectedVehiclePath}`);
     
     fetch(selectedVehiclePath)
         .then(response => {
@@ -151,13 +181,19 @@ function loadSirenTimesForType(selectedVehicle) {
             return response.text();
         })
         .then(data => {
-            const sirenTimes = parseSirenTimes(data);
-            if (sirenTimes.length === 0) {
-                console.warn(`Datoteka ${selectedVehiclePath} je prazna ali nima veljavnih vrstic.`);
+            const sirenEntries = parseSirenEntries(data);
+
+            // Odstranimo pripono .wav za primerjavo z datoteko
+            const cleanFileName = wavFileName.replace(/\.wav$/, "");
+            
+            // üoiscemo vrstico z imenom
+            const matchingEntry = sirenEntries.find(entry => entry.fileName === cleanFileName);
+
+            if (matchingEntry) {
+                // cas. razpon
+                console.log(`Časi: ${matchingEntry.startTime}s - ${matchingEntry.endTime}s`);
             } else {
-                sirenTimes.forEach(({ startTime, endTime }) => {
-                    console.log(`${startTime}s - ${endTime}s`);
-                });
+                console.warn(`WAV datoteka ${wavFileName} ni najdena v datoteki.`);
             }
         })
         .catch(error => {
@@ -165,16 +201,19 @@ function loadSirenTimesForType(selectedVehicle) {
         });
 }
 
-// za razclenjevanje
-function parseSirenTimes(data) {
-    console.log("Vsebina datoteke:", data); 
+
+
+
+// Funkcija za razčlenjevanje vsebine in iskanje WAV datotek
+function parseSirenEntries(data) {
     const lines = data.split("\n").filter(line => line.trim() !== ""); // Odstranimo prazne vrstice
     return lines.map(line => {
-        const parts = line.split(": "); // Razdeli vrstico na ime in čase
+        const parts = line.split(": "); // Razdelimo vrstico na ime datoteke in čase
         if (parts.length < 2) {
             console.warn(`Preskakovanje neveljavne vrstice: ${line}`);
             return null; 
         }
+        const fileName = parts[0]?.trim(); // Ime datoteke
         const times = parts[1]?.replace(/s/g, "").split(" - "); // Odstranimo "s" in razdelimo čase
         if (!times || times.length < 2) {
             console.warn(`Neveljavni časi v vrstici: ${line}`);
@@ -185,7 +224,6 @@ function parseSirenTimes(data) {
             console.warn(`Časi niso številski: ${line}`);
             return null; // Preskoči, če časi niso številski
         }
-        return { startTime, endTime }; 
+        return { fileName, startTime, endTime }; 
     }).filter(entry => entry !== null); // Odstrani neveljavne vnose
 }
-
