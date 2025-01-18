@@ -153,7 +153,7 @@ function closeHelp() {
 const loader = new GLTFLoader();
 
 let modelPlosca; // to kar naj tu ostane
-loader.load('armaturna_plosca.glb', function (gltf) {
+loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
     modelPlosca = gltf.scene;
     modelPlosca.scale.set(19, 10, 10);
     modelPlosca.position.set(-1.9, -1.7, 0.3);

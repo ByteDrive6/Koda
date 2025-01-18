@@ -8,7 +8,7 @@ export function setupHighwayScene(scene) {
     const fences = []; 
 
     // Nalaganje ozadja za avtocesto
-    loader.load('ozadje_avtocesta.glb', function (gltf) {
+    loader.load('./scenariji/glb_objects/ozadje_avtocesta.glb', function (gltf) {
         const highwayBackground = gltf.scene;
         highwayBackground.scale.set(13, 2, -1); 
         highwayBackground.position.set(-450, -10, -400); 
@@ -19,7 +19,7 @@ export function setupHighwayScene(scene) {
 
     // Funkcija za generiranje ograj
     function createFence(positionX, positionZ) {
-        loader.load('ograja.glb', function (gltf) {
+        loader.load('./scenariji/glb_objects/ograja.glb', function (gltf) {
             const fence = gltf.scene.clone();
             fence.scale.set(40, 6, 8); 
             fence.position.set(positionX, -8, positionZ); 

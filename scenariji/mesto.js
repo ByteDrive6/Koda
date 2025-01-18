@@ -9,7 +9,7 @@ export function setupCityScene(scene) {
     const buildings = []; 
 
     // Nalaganje ozadja (stalna cesta)
-    loader.load('ozadje.glb', function (gltf) {
+    loader.load('./scenariji/glb_objects/ozadje.glb', function (gltf) {
         const roadModel = gltf.scene;
         roadModel.scale.set(13, 2, -1);
         roadModel.position.set(-55, -8, -400);
@@ -38,7 +38,7 @@ export function setupCityScene(scene) {
 
     function createIntersectionWithBuildings(positionZ) {
         // krizisca
-        loader.load('krizisce.glb', function (gltf) {
+        loader.load('./scenariji/glb_objects/krizisce.glb', function (gltf) {
             const intersection = gltf.scene.clone();
             intersection.scale.set(30, 2, 10);
             intersection.position.set(-55, -8, positionZ);

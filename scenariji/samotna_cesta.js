@@ -8,7 +8,7 @@ export function setupEmptyRoadScene(scene) {
     const trees = []; 
 
     // Nalaganje ozadja (cesta)
-    loader.load('ozadje.glb', function (gltf) {
+    loader.load('./scenariji/glb_objects/ozadje.glb', function (gltf) {
         const roadModel = gltf.scene;
         roadModel.scale.set(13, 2, -1);
         roadModel.position.set(-55, -8, -400);
@@ -19,7 +19,7 @@ export function setupEmptyRoadScene(scene) {
 
     // Dodaj drevesa in travo ob cesti - to se morem malo optimizirat
     for (let i = 0; i < 10; i++) {
-        loader.load('tree.glb', function (gltf) {
+        loader.load('./scenariji/glb_objects/tree.glb', function (gltf) {
             const tree = gltf.scene.clone();
             tree.scale.set(14, 6, -1);
             tree.position.set(
@@ -32,7 +32,7 @@ export function setupEmptyRoadScene(scene) {
         }, undefined, function (error) {
             console.error('Napaka pri nalaganju drevesa:', error);
         });
-        loader.load('grass.glb', function (gltf) {
+        loader.load('./scenariji/glb_objects/grass.glb', function (gltf) {
             const grass = gltf.scene.clone();
             grass.scale.set(14, 6, -1);
             grass.position.set(
