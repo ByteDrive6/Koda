@@ -5,6 +5,9 @@ import { setupScene } from './sceneSetup.js';
 import { loadSounds } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
+import { animateRain } from './rainAnimation.js';
+import { initRain } from "./rain.js";
+
 
 
 const { scene, camera, renderer } = setupScene();
@@ -112,7 +115,7 @@ function submit() {
 
     loadSounds(dezEnabled, selectedScenario, selectedVehicle);
     loadScenario(selectedScenario, scene);
-    loadVehicleModel(selectedVehicle, scene, selectedDirection, mixer);
+    loadVehicleModel(selectedVehicle, scene, selectedDirection, mixer, dezEnabled);
 
     hideMenu();
 
@@ -158,20 +161,50 @@ let mixer;
 let counter = 1;
 setInterval(() => {
     counter++;
-    console.log(`Counter: ${counter}`);
+    //console.log(`Counter: ${counter}`);
 }, 100);
 
 
 let modelPlosca; // to kar naj tu ostane
 loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
     modelPlosca = gltf.scene;
-    modelPlosca.scale.set(19, 10, 10);
-    modelPlosca.position.set(-1.9, -1.7, 0.3);
+    modelPlosca.scale.set(19, 9, 9);
+    modelPlosca.position.set(-1.9, -1.0, 0.3);
     modelPlosca.renderOrder = 1;
     scene.add(modelPlosca);
 }, undefined, function (error) {
     console.error(error);
 });
+
+// Nastavitev dežja
+let rainParticles = [];
+let rainCount = 1000; // Default rain count
+let rainSettings = { count: rainCount };
+let droplets = [];
+let wipers = [];
+let classification = "not";
+
+const { rain } = initRain(scene, rainCount);
+rainParticles = rain;
+let rainValue;
+
+let osebniAvtomobil;
+// Nalaganje modela vozila
+loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
+    osebniAvtomobil = gltf.scene;
+    osebniAvtomobil.scale.set(3.5, 3.5, 4); 
+    osebniAvtomobil.position.set(0, -5.6, 3.2);
+    osebniAvtomobil.rotation.set(0, Math.PI / 2, 0); 
+    scene.add(osebniAvtomobil);
+
+    // Kamere nisem nastavla... 
+    // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
+    // camera.position.set(0,2,6); // npr.   
+
+}, undefined, function (error) {
+    console.error('Napaka pri nalaganju modela vozila:', error);
+});
+
 
 function animate() {
     if (!simulationRunning) return; // Pavza
@@ -190,6 +223,7 @@ function animate() {
     if (scene.userData.animateHighway) {
         scene.userData.animateHighway();
     }
+
 
     const vehicleModel = scene.userData.currentVehicleModel;
     if (vehicleModel) { //smer premikanja
@@ -220,6 +254,11 @@ function animate() {
             }
             
         });
+    }
+
+    if (dezEnabled) {
+        console.log("dez bo padal");
+        animateRain(rainParticles, osebniAvtomobil, scene, droplets);
     }
 
     renderer.render(scene, camera);

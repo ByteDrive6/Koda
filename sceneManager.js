@@ -28,7 +28,7 @@ export async function loadScenario(scenario, scene) {
 }
 
 
-export async function loadVehicleModel(vehicleType, scene, direction, mixer) {
+export async function loadVehicleModel(vehicleType, scene, direction, mixer, dezEnabled, osebniAvtomobil) {
     let defaultTime = 0;
 
     // Pridobi začetni čas sirene (asinhrono)
@@ -101,7 +101,7 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer) {
             action.play();
         });
 
-        scene.userData.currentVehicleModel = vehicleModel;
+        scene.userData.currentVehicleModel = vehicleModel;        
 
         console.log(`Model za ${vehicleType} iz smeri ${direction} uspešno naložen.`);
     }, undefined, function (error) {
