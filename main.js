@@ -5,8 +5,7 @@ import { setupScene } from './sceneSetup.js';
 import { loadSounds } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
-import { animateRain } from './rainAnimation.js';
-import { initRain } from "./rain.js";
+import { createRain, animateRain } from './rainAnimation.js';
 
 
 
@@ -176,17 +175,6 @@ loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
     console.error(error);
 });
 
-// Nastavitev dežja
-let rainParticles = [];
-let rainCount = 1000; // Default rain count
-let rainSettings = { count: rainCount };
-let droplets = [];
-let wipers = [];
-let classification = "not";
-
-const { rain } = initRain(scene, rainCount);
-rainParticles = rain;
-let rainValue;
 
 let osebniAvtomobil;
 // Nalaganje modela vozila
@@ -200,12 +188,12 @@ loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
     // Kamere nisem nastavla... 
     // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
     // camera.position.set(0,2,6); // npr.   
-
 }, undefined, function (error) {
     console.error('Napaka pri nalaganju modela vozila:', error);
 });
 
 
+let rainCreated = false;
 function animate() {
     if (!simulationRunning) return; // Pavza
 
@@ -256,9 +244,14 @@ function animate() {
         });
     }
 
+    if(!rainCreated) {
+        createRain(scene, osebniAvtomobil);
+        rainCreated = true;
+    }
+
     if (dezEnabled) {
         console.log("dez bo padal");
-        animateRain(rainParticles, osebniAvtomobil, scene, droplets);
+        animateRain();
     }
 
     renderer.render(scene, camera);

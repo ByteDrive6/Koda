@@ -92,6 +92,8 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
 
 
         scene.add(vehicleModel);
+        
+        
 
         // Set up animation mixer for vehicle
         mixer = new THREE.AnimationMixer(vehicleModel);
