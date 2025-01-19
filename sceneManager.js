@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 
 // Funkcija za nastavitev scenarija
@@ -25,8 +26,8 @@ export async function loadScenario(scenario, scene) {
     }
 }
 
-// Funkcija za nalaganje modela vozila
-export function loadVehicleModel(vehicleType, scene, direction) {
+
+export function loadVehicleModel(vehicleType, scene, direction, mixer) {
     const vehiclePaths = {
         resevalec: './scenariji/glb_objects/resevalnoVozilo.glb',
         gasilci: './scenariji/glb_objects/gasilskiAvto.glb',
@@ -34,18 +35,18 @@ export function loadVehicleModel(vehicleType, scene, direction) {
     };
 
     const vehicleScales = { // Skale za posamezna vozila
-        resevalec: { x: 1, y: 1, z: 1 }, 
-        gasilci: { x: 1, y: 1, z: 1},
+        resevalec: { x: 1, y: 1, z: 1 },
+        gasilci: { x: 1, y: 1, z: 1 },
         policija: { x: 1, y: 1, z: 1 },
     };
 
     const directionPositions = { // generira pozicije
-        levo: { x: -50, y: 0, z: 0, rotationY: Math.PI / 2 }, 
-        desno: { x: 50, y: 0, z: 0, rotationY: -Math.PI / 2 }, 
-        spredaj: { x: -10, y: 0, z: -50, rotationY: 0 }, 
+        levo: { x: -50, y: 0, z: 0, rotationY: Math.PI / 2 },
+        desno: { x: 50, y: 0, z: 0, rotationY: -Math.PI / 2 },
+        spredaj: { x: -10, y: 0, z: -50, rotationY: 0 },
         zadaj: { x: -10, y: 0, z: 50, rotationY: Math.PI },
     };
-    
+
 
     const modelPath = vehiclePaths[vehicleType];
     const position = directionPositions[direction];
@@ -75,7 +76,22 @@ export function loadVehicleModel(vehicleType, scene, direction) {
             vehicleModel.rotation.y += Math.PI;
         }
 
+        vehicleModel.traverse(function (child) {
+            if (child.isMesh && child.name === "Lucka") {
+                child.material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+            }
+        });
+
+
         scene.add(vehicleModel);
+
+        // Set up animation mixer for vehicle
+        mixer = new THREE.AnimationMixer(vehicleModel);
+        const clips = gltf.animations;
+        clips.forEach(function (clip) {
+            const action = mixer.clipAction(clip);
+            action.play();
+        });
 
         scene.userData.currentVehicleModel = vehicleModel;
 
@@ -84,4 +100,3 @@ export function loadVehicleModel(vehicleType, scene, direction) {
         console.error("Napaka pri nalaganju modela vozila:", error);
     });
 }
-
