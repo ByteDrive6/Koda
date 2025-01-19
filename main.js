@@ -187,7 +187,7 @@ loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
 
     // Kamere nisem nastavla... 
     // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
-    // camera.position.set(0,2,6); // npr.   
+    camera.position.set(0,2,6); // npr.   
 }, undefined, function (error) {
     console.error('Napaka pri nalaganju modela vozila:', error);
 });
@@ -244,7 +244,7 @@ function animate() {
         });
     }
 
-    if(!rainCreated) {
+    if(!rainCreated && dezEnabled) {
         createRain(scene, osebniAvtomobil);
         rainCreated = true;
     }
