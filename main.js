@@ -97,6 +97,8 @@ function setScenario(scenario) {
 }
 
 // dodala sem submit button
+
+
 window.submit = submit;
 function submit() {
     if (!selectedVehicle || !selectedDirection || !selectedScenario) {
@@ -110,7 +112,7 @@ function submit() {
 
     loadSounds(dezEnabled, selectedScenario, selectedVehicle);
     loadScenario(selectedScenario, scene);
-    loadVehicleModel(selectedVehicle, scene, selectedDirection);
+    loadVehicleModel(selectedVehicle, scene, selectedDirection, mixer);
 
     hideMenu();
 
@@ -151,6 +153,14 @@ function closeHelp() {
 }
 
 const loader = new GLTFLoader();
+let mixer;
+
+let counter = 1;
+setInterval(() => {
+    counter++;
+    console.log(`Counter: ${counter}`);
+}, 100);
+
 
 let modelPlosca; // to kar naj tu ostane
 loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
@@ -197,6 +207,19 @@ function animate() {
                 vehicleModel.position.z -= 0.5; 
                 break;
         }
+    }
+    if (vehicleModel) {
+        vehicleModel.traverse(function (child) {
+            if (child.isMesh && child.name === "Lucka") {
+                if (counter % 2 === 0) {
+                    // child.material = new THREE.MeshStandardMaterial({ color: 0x0005A0 });
+                    child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+                } else {
+                    child.material = new THREE.MeshStandardMaterial({ color: 0x115990 });
+                }
+            }
+            
+        });
     }
 
     renderer.render(scene, camera);
