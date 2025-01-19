@@ -150,6 +150,7 @@ export function loadSounds(dezEnabled, selectedScenario, selectedVehicle) {
     // Če je ime WAV datoteke določeno, naloži ustrezne čase siren zanjo
     if (wavFileName) {
         loadSirenTimesForType(selectedVehicle, wavFileName);
+        console.log("Nalagam zvok in čase za sireno...");
     } else {
         console.error("Ime WAV datoteke ni določeno ali scenarij ni ustrezno definiran.");
     }
@@ -157,23 +158,27 @@ export function loadSounds(dezEnabled, selectedScenario, selectedVehicle) {
 
 
 
+let sirenStartTime = null; // Spremenljivka za začetni čas
+let sirenEndTime = null;   // Spremenljivka za končni čas
+let sirenTimesPromise = null; //  za spremljanje nalaganja časov
+
 function loadSirenTimesForType(selectedVehicle, wavFileName) {
     const vehicleType = {
         resevalec: './Zvočni posnetki/Resevalne_sirene/casiSirene.txt',
         gasilci: './Zvočni posnetki/Gasilske_sirene/casiSirene.txt',
         policija: './Zvočni posnetki/Policijske_sirene/casiSirene.txt',
     };
-    
+
     const selectedVehiclePath = vehicleType[selectedVehicle];
-    
+
     if (!selectedVehiclePath) {
-        console.error(`Neveljaven tip vozila: ${selectedVehicle}`);
-        return;
+        return Promise.reject(new Error(`Neveljaven tip vozila: ${selectedVehicle}`));
     }
-    
+
     console.log(`Nalagam čase za ${wavFileName} iz: ${selectedVehiclePath}`);
-    
-    fetch(selectedVehiclePath)
+
+    // Shranimo obljubo v sirenTimesPromise
+    sirenTimesPromise = fetch(selectedVehiclePath)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Napaka pri nalaganju datoteke: ${response.statusText}`);
@@ -182,23 +187,44 @@ function loadSirenTimesForType(selectedVehicle, wavFileName) {
         })
         .then(data => {
             const sirenEntries = parseSirenEntries(data);
-
-            // Odstranimo pripono .wav za primerjavo z datoteko
             const cleanFileName = wavFileName.replace(/\.wav$/, "");
-            
-            // üoiscemo vrstico z imenom
             const matchingEntry = sirenEntries.find(entry => entry.fileName === cleanFileName);
 
             if (matchingEntry) {
-                // cas. razpon
-                console.log(`Časi: ${matchingEntry.startTime}s - ${matchingEntry.endTime}s`);
+                sirenStartTime = matchingEntry.startTime;
+                sirenEndTime = matchingEntry.endTime;
+                console.log(`Shranjeni časi: ${sirenStartTime}s - ${sirenEndTime}s`);
+                return { startTime: sirenStartTime, endTime: sirenEndTime };
             } else {
                 console.warn(`WAV datoteka ${wavFileName} ni najdena v datoteki.`);
+                return null;
             }
         })
         .catch(error => {
             console.error(`Napaka pri nalaganju časov siren za ${selectedVehicle}:`, error);
+            throw error;
         });
+
+    return sirenTimesPromise;
+}
+
+// Funkcija outputTime čaka na sirenTimesPromise
+export async function outputTime(defaultTime) {
+    if (sirenStartTime !== null) {
+        return { startTime: sirenStartTime };
+    }
+
+    console.warn("Časi še niso naloženi. Čakam na nalaganje...");
+    if (sirenTimesPromise) {
+        await sirenTimesPromise;
+    }
+
+    if (sirenStartTime !== null) {
+        return { startTime: sirenStartTime };
+    } else {
+        console.warn("Časi še vedno niso naloženi. Uporabljam privzeti čas.");
+        return { startTime: defaultTime }; 
+    }
 }
 
 

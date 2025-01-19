@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+import {  outputTime } from './audioManager.js';
 
 // Funkcija za nastavitev scenarija
 export async function loadScenario(scenario, scene) {
@@ -27,7 +28,14 @@ export async function loadScenario(scenario, scene) {
 }
 
 
-export function loadVehicleModel(vehicleType, scene, direction, mixer) {
+export async function loadVehicleModel(vehicleType, scene, direction, mixer) {
+    let defaultTime = 0;
+
+    // Pridobi začetni čas sirene (asinhrono)
+    const timeResult = await outputTime(defaultTime);
+    console.log(`Začetni čas iz sceneManager: ${timeResult.startTime}`);
+    
+
     const vehiclePaths = {
         resevalec: './scenariji/glb_objects/resevalnoVozilo.glb',
         gasilci: './scenariji/glb_objects/gasilskiAvto.glb',
