@@ -2,7 +2,7 @@ import * as THREE from './node_modules/three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { setupScene } from './sceneSetup.js';
-import { loadSounds } from './audioManager.js';
+import { loadSounds, pauseAudio, resumeAudio, resetAll } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
 import { createRain, animateRain } from './rainAnimation.js';
@@ -17,6 +17,7 @@ renderer.setSize(width, height);
 container.appendChild(renderer.domElement);
 
 const controls = setupControls(camera, renderer);
+let sounds = [];
 
 window.addEventListener('resize', () => {
     const width = container.offsetWidth;
@@ -34,6 +35,12 @@ let selectedDirection = null;
 let selectedScenario = null;
 let dezEnabled = false;
 
+// Spremenljivke za spremljanje prejšnjih izbir
+let oldSelectedVehicle = null;
+let oldSelectedDirection = null;
+let oldSelectedScenario = null;
+let oldDezEnabled = false;
+
 let mainMenuVisible = false;
 
 window.toggleMainMenu = toggleMainMenu;
@@ -47,10 +54,48 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-function toggleMainMenu() {
+export function toggleMainMenu() {
     mainMenuVisible = !mainMenuVisible;
     const menu = document.getElementById("popupMenu");
     menu.style.display = mainMenuVisible ? "block" : "none";
+
+    if (mainMenuVisible) {
+        pauseSimulation();  // Ustavi simulacijo, če odpreš meni
+        pauseAudio();
+    } else if (!mainMenuVisible) {
+        continueSimulation();
+        resumeAudio();
+    }
+}
+
+function pauseSimulation() {
+    simulationRunning = false;
+    console.log("Pavza")
+}
+
+export function stopSimulation() {
+    simulationRunning = false;
+    console.log("Prekinjena simulacija")
+    // Odstranimo vse elemente razen osnovnih
+    while (scene.children.length > 0) {
+        const object = scene.children.pop();
+        if (object !== camera && object !== renderer.domElement) {
+            scene.remove(object);
+        }
+    }
+    
+    // Ponastavi parametre
+    oldSelectedVehicle = null;
+    oldSelectedDirection = null;
+    oldSelectedScenario = null;
+    oldDezEnabled = false;
+}
+
+function continueSimulation() {
+    simulationRunning = true;
+    renderer.setAnimationLoop(animate);
+    console.log("Simulacija se nadaljuje");
+
 }
 
 window.toggleRain = toggleRain;
@@ -97,24 +142,34 @@ function setScenario(scenario) {
     currentButton.classList.add("selected");
 }
 
-// dodala sem submit button
-
-
+// submit button
 window.submit = submit;
 function submit() {
     if (!selectedVehicle || !selectedDirection || !selectedScenario) {
         alert("Prosimo, izberi vozilo, smer in scenarij, preden pritisneš Submit.");
         return;
-    }
+    }   
 
-    console.log(`Izbrano vozilo: ${selectedVehicle}`);
-    console.log(`Izbrana smer: ${selectedDirection}`);
-    console.log(`Izbrani scenarij: ${selectedScenario}`);
+    resetAll(); 
 
-    loadSounds(dezEnabled, selectedScenario, selectedVehicle);
-    loadScenario(selectedScenario, scene);
-    loadVehicleModel(selectedVehicle, scene, selectedDirection, mixer, dezEnabled);
-    addSunlight(scene, selectedScenario);
+    stopSimulation(); // Prekini prejšnjo simulacijo in ponastavi sceno
+
+    // Shranimo prejšnje nastavitve pred ponastavitvijo
+    oldSelectedVehicle = selectedVehicle;
+    oldSelectedDirection = selectedDirection;
+    oldSelectedScenario = selectedScenario;
+    oldDezEnabled = dezEnabled;
+
+    console.log(`Izbrano vozilo: ${oldSelectedVehicle}`);
+    console.log(`Izbrana smer: ${oldSelectedDirection}`);
+    console.log(`Izbrani scenarij: ${oldSelectedScenario}`);
+
+    loadOsebniAvtomobil();
+    sounds = loadSounds(oldDezEnabled, oldSelectedScenario, oldSelectedVehicle);
+    console.log("Sounds: ", sounds);
+    loadScenario(oldSelectedScenario, scene);
+    loadVehicleModel(oldSelectedVehicle, scene, oldSelectedDirection, mixer, oldDezEnabled);
+    addSunlight(scene, oldSelectedScenario);
     addLight(scene);
 
     hideMenu();
@@ -166,32 +221,34 @@ setInterval(() => {
 
 
 let modelPlosca; // to kar naj tu ostane
-loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
-    modelPlosca = gltf.scene;
-    modelPlosca.scale.set(19, 9, 9);
-    modelPlosca.position.set(-1.9, -1.0, 0.3);
-    modelPlosca.renderOrder = 1;
-    scene.add(modelPlosca);
-}, undefined, function (error) {
-    console.error(error);
-});
-
-
 let osebniAvtomobil;
 // Nalaganje modela vozila
-loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
-    osebniAvtomobil = gltf.scene;
-    osebniAvtomobil.scale.set(3.5, 3.5, 4); 
-    osebniAvtomobil.position.set(0, -5.6, 3.2);
-    osebniAvtomobil.rotation.set(0, Math.PI / 2, 0); 
-    scene.add(osebniAvtomobil);
 
-    // Kamere nisem nastavla... 
-    // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
-    camera.position.set(0,2,6); // npr.   
-}, undefined, function (error) {
-    console.error('Napaka pri nalaganju modela vozila:', error);
-});
+function loadOsebniAvtomobil() {
+    loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
+        modelPlosca = gltf.scene;
+        modelPlosca.scale.set(19, 9, 9);
+        modelPlosca.position.set(-1.9, -1.0, 0.3);
+        modelPlosca.renderOrder = 1;
+        scene.add(modelPlosca);
+    }, undefined, function (error) {
+        console.error(error);
+    });
+    loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
+        osebniAvtomobil = gltf.scene;
+        osebniAvtomobil.scale.set(3.5, 3.5, 4); 
+        osebniAvtomobil.position.set(0, -5.6, 3.2);
+        osebniAvtomobil.rotation.set(0, Math.PI / 2, 0); 
+        scene.add(osebniAvtomobil);
+
+        // Kamere nisem nastavla... 
+        // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
+        camera.position.set(0,2,6); // npr.   
+    }, undefined, function (error) {
+        console.error('Napaka pri nalaganju modela vozila:', error);
+    });
+}
+loadOsebniAvtomobil(); // Tu se kliče v primeru, da je prvi scenarij, ki ga uporabnik izbere že z dežem (more se prej naložit in ustvarit)
 
 
 let rainCreated = false;
@@ -253,7 +310,6 @@ function animate() {
     }
 
     if (dezEnabled) {
-        console.log("dez bo padal");
         animateRain();
     }
 

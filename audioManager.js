@@ -1,5 +1,12 @@
+import { toggleMainMenu, stopSimulation } from "./main.js"
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let audioBuffer = null;
+let audioSource = null;
+let startTime = 0; // Čas začetka predvajanja
+let pausedAt = 0; // Čas, ko je bil zvok pavziran
+let isPlaying = false; // Stanje predvajanja
+let isPaused = false;
 
 // Funkcija za nalaganje zvočnega posnetka
 function loadAudioFile(url) {
@@ -16,17 +23,75 @@ function loadAudioFile(url) {
             console.error('Error loading audio:', error);
         });
 }
-// Funkcija za predvajanje zvočnega ponsetka
+// Funkcija za predvajanje zvočnega posnetka
 function playAudio() {
     if (audioBuffer) {
-        const audioSource = audioContext.createBufferSource();
+        if (isPlaying) {
+            audioSource.stop(); // Prekinemo trenutno predvajanje, če obstaja
+        }
+        audioSource = audioContext.createBufferSource();
         audioSource.buffer = audioBuffer;
         audioSource.connect(audioContext.destination);
-        audioSource.start();
-        console.log('Zvočni posnetek se predvaja');
+
+        // Dodajanje onended dogodka
+        audioSource.onended = function() {
+            if(!isPaused) {
+                console.log("Posnetek je končan");
+                stopSimulation(); 
+                toggleMainMenu();   
+            }
+        };
+
+        startTime = audioContext.currentTime - pausedAt;
+        audioSource.start(0, pausedAt);
+        isPlaying = true;
+        isPaused = false;
+        console.log('Zvočni posnetek se predvaja od:', pausedAt, 'sekund');
     } else {
         console.error('Zvočni posnetek še ni naložen');
     }
+}
+
+// Funkcija za pavziranje zvočnega posnetka
+export function pauseAudio() {
+    if (isPlaying) {
+        audioSource.stop();
+        pausedAt = audioContext.currentTime - startTime;
+        isPlaying = false;
+        isPaused = true;
+        console.log('Zvočni posnetek pavziran na:', pausedAt, 'sekund');
+    }
+}
+
+// Funkcija za nadaljevanje zvočnega posnetka
+export function resumeAudio() {
+    if (!isPlaying && audioBuffer) {
+        playAudio();
+        isPaused = false;
+        console.log('Nadaljevanje predvajanja zvočnega posnetka');
+    }
+}
+
+// Funkcija za ponastavitev audio stanja
+function resetAudio() {
+    if (audioSource) {
+        audioSource.stop();
+    }
+    audioBuffer = null;
+    audioSource = null;
+    startTime = 0;
+    pausedAt = 0;
+    isPlaying = false;
+    console.log('Audio stanje ponastavljeno.');
+}
+
+// Funkcija za ponastavitev vsega
+export function resetAll() {
+    resetAudio(); // Ponastavi audio
+    sirenStartTime = null;
+    sirenEndTime = null;
+    sirenTimesPromise = null; // Ponastavi obljubo za nalaganje časov sirene
+    console.log('Vse nastavitve so ponastavljene.');
 }
 
 // Funkcija za nalaganje zvokov
@@ -211,7 +276,9 @@ function loadSirenTimesForType(selectedVehicle, wavFileName) {
 // Funkcija outputTime čaka na sirenTimesPromise
 export async function outputTime(defaultTime) {
     if (sirenStartTime !== null) {
-        return { startTime: sirenStartTime };
+        // Prišteti čas pavze k začetnemu času sirene
+        const adjustedStartTime = sirenStartTime + pausedAt;
+        return { startTime: adjustedStartTime };
     }
 
     console.warn("Časi še niso naloženi. Čakam na nalaganje...");

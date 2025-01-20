@@ -76,5 +76,13 @@
      </div>
      
      <script type="module" src="/main.js"></script>
+     
+      <script>
+        // Funkcija za onemogočanje spremembe stanja checkboxa
+        window.onload = function() {
+            const rainSwitch = document.getElementById('rainSwitch');
+            rainSwitch.checked = false; // Nastavi checkbox na off ob nalaganju strani
+        };
+     </script>
 	</body>
 </html>
