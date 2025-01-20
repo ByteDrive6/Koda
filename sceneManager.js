@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
-import {  outputTime } from './audioManager.js';
+import { outputTime } from './audioManager.js';
 
 // Lahko si ustvariš univerzalno funkcijo za zamik.
 // Vzame število milisekund in vrne Promise, ki se izpolni po tem času.
 export function myDelay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
+}
 
-  
+
 // Funkcija za nastavitev scenarija
 export async function loadScenario(scenario, scene) {
     try {
@@ -35,7 +35,12 @@ export async function loadScenario(scenario, scene) {
 }
 
 
-export async function loadVehicleModel(vehicleType, scene, direction, mixer, dezEnabled, osebniAvtomobil) {
+
+const texture = new THREE.TextureLoader().load(
+    '/scenariji/klicaj.png'
+)
+
+export async function loadVehicleModel(vehicleType, scene, direction, mixer, dezEnabled, osebniAvtomobil, modelPlosca) {
     let defaultTime = 0;
 
     // Pridobi začetni čas sirene (asinhrono)
@@ -43,8 +48,6 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
     console.log(`Začetni čas iz sceneManager: ${timeResult.startTime}`);
 
     await myDelay(timeResult.startTime * 1350); // 3,5 sekundi vec
-
-    
 
     const vehiclePaths = {
         resevalec: './scenariji/glb_objects/resevalnoVozilo.glb',
@@ -81,6 +84,21 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
     }
 
     const loader = new GLTFLoader();
+
+    const loadModelPlosca = new Promise((resolve, reject) => {
+        loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
+            modelPlosca = gltf.scene;
+            modelPlosca.scale.set(19, 9, 9);
+            modelPlosca.position.set(-1.9, -1.0, 0.3);
+            modelPlosca.renderOrder = 1;
+            scene.add(modelPlosca);
+            resolve(modelPlosca);
+        }, undefined, function (error) {
+            console.error(error);
+            reject(error); 
+        });
+    });
+
     loader.load(modelPath, function (gltf) {
         const vehicleModel = gltf.scene;
         vehicleModel.scale.set(scale.x, scale.y, scale.z);
@@ -102,10 +120,7 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
 
 
         scene.add(vehicleModel);
-        
-        
 
-        // Set up animation mixer for vehicle
         mixer = new THREE.AnimationMixer(vehicleModel);
         const clips = gltf.animations;
         clips.forEach(function (clip) {
@@ -113,10 +128,33 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
             action.play();
         });
 
-        scene.userData.currentVehicleModel = vehicleModel;        
+        if (modelPlosca) {
+            console.log("uspesno")
+        }
+        else {
+            console.log("neuspesno")
+        }
+
+        scene.userData.currentVehicleModel = vehicleModel;
 
         console.log(`Model za ${vehicleType} iz smeri ${direction} uspešno naložen.`);
     }, undefined, function (error) {
         console.error("Napaka pri nalaganju modela vozila:", error);
     });
+
+    await loadModelPlosca;
+
+    await myDelay(timeResult.startTime * 1000);
+
+    if (modelPlosca) {
+        modelPlosca.traverse(function (child) {
+            if (child.isMesh && child.name === 'Cube') { // kadar se najde ta mesh se doda tekstura klicaja
+                child.material.map = texture;
+                child.material.needsUpdate = true;
+            }
+        });
+    } else {
+        console.log('modelPlosca ni');
+    }
+
 }
