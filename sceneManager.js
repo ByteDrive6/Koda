@@ -2,6 +2,13 @@ import * as THREE from 'three';
 import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 import {  outputTime } from './audioManager.js';
 
+// Lahko si ustvariš univerzalno funkcijo za zamik.
+// Vzame število milisekund in vrne Promise, ki se izpolni po tem času.
+export function myDelay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  
 // Funkcija za nastavitev scenarija
 export async function loadScenario(scenario, scene) {
     try {
@@ -34,6 +41,9 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
     // Pridobi začetni čas sirene (asinhrono)
     const timeResult = await outputTime(defaultTime);
     console.log(`Začetni čas iz sceneManager: ${timeResult.startTime}`);
+
+    await myDelay(timeResult.startTime * 1350); // 3,5 sekundi vec
+
     
 
     const vehiclePaths = {
@@ -43,9 +53,9 @@ export async function loadVehicleModel(vehicleType, scene, direction, mixer, dez
     };
 
     const vehicleScales = { // Skale za posamezna vozila
-        resevalec: { x: 1, y: 1, z: 1 },
-        gasilci: { x: 1, y: 1, z: 1 },
-        policija: { x: 1, y: 1, z: 1 },
+        resevalec: { x: 3, y: 2, z: 3 },
+        gasilci: { x: 3, y: 2, z: 3 },
+        policija: { x: 3, y: 2, z: 3 },
     };
 
     const directionPositions = { // generira pozicije
