@@ -14,7 +14,6 @@ export function setupEmptyRoadScene(scene) {
         roadModel.position.set(-55, -8, -400);
         roadModel.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
-
                 child.receiveShadow = true;  
             }
         });        
@@ -24,12 +23,12 @@ export function setupEmptyRoadScene(scene) {
     });
 
     // Dodaj drevesa in travo ob cesti - to se morem malo optimizirat
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         loader.load('./scenariji/glb_objects/tree.glb', function (gltf) {
             const tree = gltf.scene.clone();
-            tree.scale.set(14, 6, -1);
+            tree.scale.set(15, 6, 15);
             tree.position.set(
-                (Math.random() > 0.5 ? 1 : -1) * (50 + Math.random() * 600), 
+                (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 500), 
                 6,
                 -i * 50 
             );
@@ -46,9 +45,28 @@ export function setupEmptyRoadScene(scene) {
         });
         loader.load('./scenariji/glb_objects/grass.glb', function (gltf) {
             const grass = gltf.scene.clone();
-            grass.scale.set(14, 6, -1);
+            grass.scale.set(14, 6, 14);
             grass.position.set(
-                (Math.random() > 0.5 ? 1 : -1) * (50 + Math.random() * 600), 
+                (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 500),  
+                -8,
+                -i * 50 
+            );
+            grass.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
+            scene.add(grass);
+            trees.push(grass); 
+        }, undefined, function (error) {
+            console.error('Napaka pri nalaganju trave:', error);
+        });
+        loader.load('./scenariji/glb_objects/smreka.glb', function (gltf) {
+            const grass = gltf.scene.clone();
+            grass.scale.set(14, 6, 14);
+            grass.position.set(
+                (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 500),  
                 -8,
                 -i * 50 
             );
