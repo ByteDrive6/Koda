@@ -12,6 +12,12 @@ export function setupHighwayScene(scene) {
         const highwayBackground = gltf.scene;
         highwayBackground.scale.set(13, 2, -1); 
         highwayBackground.position.set(-450, -10, -400); 
+        highwayBackground.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+
+                child.receiveShadow = true;  
+            }
+        });        
         scene.add(highwayBackground);
     }, undefined, function (error) {
         console.error('Napaka pri nalaganju ozadja avtoceste:', error);
@@ -23,6 +29,12 @@ export function setupHighwayScene(scene) {
             const fence = gltf.scene.clone();
             fence.scale.set(40, 6, 8); 
             fence.position.set(positionX, -8, positionZ); 
+            fence.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
             scene.add(fence);
             fences.push(fence); 
         }, undefined, function (error) {

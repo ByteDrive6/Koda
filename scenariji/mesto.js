@@ -31,7 +31,6 @@ export function setupCityScene(scene) {
             // Preveri ali so vsi otroci objekta mesh - za metanje senc
             building.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    console.log("To je Mesh!", child);
                     child.castShadow = true;  
                     child.receiveShadow = true;  
                 }

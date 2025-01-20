@@ -6,13 +6,9 @@ import { loadSounds } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
 import { createRain, animateRain } from './rainAnimation.js';
-import { addSunlight } from './blescanjeAnimation.js';
+import { addSunlight, addLight } from './blescanjeAnimation.js';
 
 const { scene, camera, renderer } = setupScene();
-
-
-addSunlight(scene);
-
 
 const container = document.getElementById('canvas');
 const width = container.offsetWidth;
@@ -118,6 +114,8 @@ function submit() {
     loadSounds(dezEnabled, selectedScenario, selectedVehicle);
     loadScenario(selectedScenario, scene);
     loadVehicleModel(selectedVehicle, scene, selectedDirection, mixer, dezEnabled);
+    addSunlight(scene, selectedScenario);
+    addLight(scene);
 
     hideMenu();
 
@@ -246,6 +244,8 @@ function animate() {
             
         });
     }
+
+
 
     if(!rainCreated && dezEnabled) {
         createRain(scene, osebniAvtomobil);

@@ -12,6 +12,12 @@ export function setupEmptyRoadScene(scene) {
         const roadModel = gltf.scene;
         roadModel.scale.set(13, 2, -1);
         roadModel.position.set(-55, -8, -400);
+        roadModel.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+
+                child.receiveShadow = true;  
+            }
+        });        
         scene.add(roadModel);
     }, undefined, function (error) {
         console.error('Napaka pri nalaganju modela samotne ceste:', error);
@@ -27,6 +33,12 @@ export function setupEmptyRoadScene(scene) {
                 6,
                 -i * 50 
             );
+            tree.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
             scene.add(tree);
             trees.push(tree); 
         }, undefined, function (error) {
@@ -40,6 +52,12 @@ export function setupEmptyRoadScene(scene) {
                 -8,
                 -i * 50 
             );
+            grass.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
             scene.add(grass);
             trees.push(grass); 
         }, undefined, function (error) {
