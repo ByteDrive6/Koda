@@ -190,7 +190,7 @@ loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
     scene.add(osebniAvtomobil);
     // Kamere nisem nastavla... 
     // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
-    // camera.position.set(0,2,6); // npr.   
+    camera.position.set(0,2,6); // npr.   
 }, undefined, function (error) {
     console.error('Napaka pri nalaganju modela vozila:', error);
 });
@@ -377,16 +377,16 @@ function animate() {
     if (vehicleModel) { //smer premikanja
         switch (selectedDirection) {
             case "levo":
-                vehicleModel.position.x += 0.5;
+                vehicleModel.position.x += 10; 
                 break;
             case "desno":
-                vehicleModel.position.x -= 0.5;
+                vehicleModel.position.x -= 10; 
                 break;
             case "spredaj":
-                vehicleModel.position.z += 0.5;
+                vehicleModel.position.z += 2; 
                 break;
             case "zadaj":
-                vehicleModel.position.z -= 0.5;
+                vehicleModel.position.z -= 1.5; 
                 break;
         }
     }
