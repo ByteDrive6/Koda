@@ -27,7 +27,7 @@ export function setupEmptyRoadScene(scene) {
     for (let i = 0; i < 100; i++) {
         loader.load('./scenariji/glb_objects/tree.glb', function (gltf) {
             const tree = gltf.scene.clone();
-            tree.scale.set(14, 6, 14);
+            tree.scale.set(15, 6, 15);
             tree.position.set(
                 (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 500), 
                 6,
@@ -45,6 +45,25 @@ export function setupEmptyRoadScene(scene) {
             console.error('Napaka pri nalaganju drevesa:', error);
         });
         loader.load('./scenariji/glb_objects/grass.glb', function (gltf) {
+            const grass = gltf.scene.clone();
+            grass.scale.set(14, 6, 14);
+            grass.position.set(
+                (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 500),  
+                -8,
+                -i * 50 
+            );
+            grass.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
+            scene.add(grass);
+            trees.push(grass); 
+        }, undefined, function (error) {
+            console.error('Napaka pri nalaganju trave:', error);
+        });
+        loader.load('./scenariji/glb_objects/smreka.glb', function (gltf) {
             const grass = gltf.scene.clone();
             grass.scale.set(14, 6, 14);
             grass.position.set(
