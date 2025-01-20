@@ -7,6 +7,7 @@ import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
 import { createRain, animateRain } from './rainAnimation.js';
 import { addSunlight, addLight } from './blescanjeAnimation.js';
+import { onMouseClick } from './onClick';
 
 const { scene, camera, renderer } = setupScene();
 
@@ -35,7 +36,6 @@ let selectedDirection = null;
 let selectedScenario = null;
 let dezEnabled = false;
 
-// Spremenljivke za spremljanje prejšnjih izbir
 let oldSelectedVehicle = null;
 let oldSelectedDirection = null;
 let oldSelectedScenario = null;
@@ -55,10 +55,6 @@ document.addEventListener('keydown', (event) => {
 });
 
 export function toggleMainMenu() {
-    mainMenuVisible = !mainMenuVisible;
-    const menu = document.getElementById("popupMenu");
-    menu.style.display = mainMenuVisible ? "block" : "none";
-
     if (mainMenuVisible) {
         pauseSimulation();  // Ustavi simulacijo, če odpreš meni
         pauseAudio();
@@ -67,12 +63,10 @@ export function toggleMainMenu() {
         resumeAudio();
     }
 }
-
 function pauseSimulation() {
     simulationRunning = false;
     console.log("Pavza")
 }
-
 export function stopSimulation() {
     simulationRunning = false;
     console.log("Prekinjena simulacija")
@@ -90,7 +84,6 @@ export function stopSimulation() {
     oldSelectedScenario = null;
     oldDezEnabled = false;
 }
-
 function continueSimulation() {
     simulationRunning = true;
     renderer.setAnimationLoop(animate);
@@ -178,6 +171,7 @@ function submit() {
     console.log("Simulacija je začela teči.");
 }
 
+
 function hideMenu() {
     const menu = document.getElementById("popupMenu");
     menu.style.display = "none";
@@ -210,6 +204,7 @@ function closeHelp() {
     document.getElementById("popupMenu").style.display = "block";
 }
 
+
 const loader = new GLTFLoader();
 let mixer;
 
@@ -219,10 +214,11 @@ setInterval(() => {
     //console.log(`Counter: ${counter}`);
 }, 100);
 
-
 let modelPlosca; // to kar naj tu ostane
 let osebniAvtomobil;
-// Nalaganje modela vozila
+
+let avto1;
+let avto2;
 
 function loadOsebniAvtomobil() {
     loader.load('./scenariji/glb_objects/armaturna_plosca.glb', function (gltf) {
@@ -240,24 +236,53 @@ function loadOsebniAvtomobil() {
         osebniAvtomobil.position.set(0, -5.6, 3.2);
         osebniAvtomobil.rotation.set(0, Math.PI / 2, 0); 
         scene.add(osebniAvtomobil);
-
         // Kamere nisem nastavla... 
         // lahko preverimo, če je potrebno al je okej če jo uporabnik malo prilagodi sam z miško
         camera.position.set(0,2,6); // npr.   
     }, undefined, function (error) {
         console.error('Napaka pri nalaganju modela vozila:', error);
     });
+
+    loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
+        avto1 = gltf.scene;
+        avto1.scale.set(3.5, 3.5, 4);
+        avto1.position.set(25, -5.6, 7.2);
+        avto1.rotation.set(0, Math.PI / 2, 0);
+        scene.add(avto1);
+    }, undefined, function (error) {
+        console.error('Napaka pri nalaganju modela vozila:', error);
+    });
+
+    loader.load('./scenariji/glb_objects/osebniavto.glb', function (gltf) {
+        avto2 = gltf.scene;
+        avto2.scale.set(3.5, 3.5, 4);
+        avto2.position.set(25, -5.6, -80.2);
+        avto2.rotation.set(0, Math.PI / 2, 0);
+        scene.add(avto2);
+    }, undefined, function (error) {
+        console.error('Napaka pri nalaganju modela vozila:', error);
+    });
 }
-loadOsebniAvtomobil(); // Tu se kliče v primeru, da je prvi scenarij, ki ga uporabnik izbere že z dežem (more se prej naložit in ustvarit)
+loadOsebniAvtomobil(); 
+
+
+// interaktivni prikaz zaslona
+const raycaster = new THREE.Raycaster();
+
+window.addEventListener('click', (event) => {
+    onMouseClick(event, container, raycaster, camera, modelPlosca, selectedVehicle, selectedDirection);
+});
+
 
 
 let rainCreated = false;
 function animate() {
+
     if (!simulationRunning) return; // Pavza
 
     // Animacija dreves za samotno cesto
     if (scene.userData.animateTrees) {
-        scene.userData.animateTrees(); 
+        scene.userData.animateTrees();
     }
 
     // Animacija mesta (križišča in zgradbe)
@@ -270,64 +295,59 @@ function animate() {
         scene.userData.animateHighway();
     }
 
-
     const vehicleModel = scene.userData.currentVehicleModel;
     if (vehicleModel) { //smer premikanja
         switch (selectedDirection) {
             case "levo":
-                vehicleModel.position.x += 0.5; 
+                vehicleModel.position.x += 10; 
                 break;
             case "desno":
-                vehicleModel.position.x -= 0.5; 
+                vehicleModel.position.x -= 10; 
                 break;
             case "spredaj":
-                vehicleModel.position.z += 0.5; 
+                vehicleModel.position.z += 2; 
                 break;
             case "zadaj":
-                vehicleModel.position.z -= 0.5; 
+                vehicleModel.position.z -= 1.5; 
                 break;
         }
     }
     if (vehicleModel) {
         vehicleModel.traverse(function (child) {
-            if (child.isMesh && child.name === "Lucka") {
+            if (child.isMesh && child.name === "Lucka" || ["Lucka1", "Lucka2", "Lucka3", "Lucka4"].includes(child.name)) { // dodatek za luci pri resevalnem vozilu
                 if (counter % 2 === 0) {
                     // child.material = new THREE.MeshStandardMaterial({ color: 0x0005A0 });
                     child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+                    child.userData.bloom = true; // Mark mesh for bloom
                 } else {
                     child.material = new THREE.MeshStandardMaterial({ color: 0x115990 });
+                    child.userData.bloom = false; // Remove bloom effect
                 }
             }
-            
         });
     }
 
-
-
-    if(!rainCreated && dezEnabled) {
+    if (!rainCreated && dezEnabled) {
         createRain(scene, osebniAvtomobil);
         rainCreated = true;
     }
 
     if (dezEnabled) {
+        //console.log("dez bo padal");
         animateRain();
+    }
+
+
+    if (avto1 && avto2 && selectedScenario === 'avtocesta') {
+        avto1.position.z += -0.5;
+        avto2.position.z += -1; }
+    else if (selectedScenario === 'mesto' || selectedScenario === 'prazna'){
+        avto1.visible = false;
+        avto2.visible = false;
+        
     }
 
     renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(animate);
-
-//function animate() {
-    // Tukaj lahko dodamo svojo logiko za animacijo, ki se bo izvajala, ko je simulacija aktivna
-//    renderer.render(scene, camera);
-//}
-
-// function animate() {
-
-// 	cube.rotation.x += 0.01;
-// 	cube.rotation.y += 0.01;
-
-// 	renderer.render( scene, camera );
-
-// }
