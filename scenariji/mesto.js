@@ -13,6 +13,7 @@ export function setupCityScene(scene) {
         const roadModel = gltf.scene;
         roadModel.scale.set(13, 2, -1);
         roadModel.position.set(-55, -8, -400);
+        roadModel.receiveShadow = true;
         scene.add(roadModel);
     }, undefined, function (error) {
         console.error('Napaka pri nalaganju modela ceste:', error);
@@ -27,6 +28,14 @@ export function setupCityScene(scene) {
             const building = gltf.scene.clone();
             building.scale.set(0.6, 0.6, 0.6); 
             building.position.set(positionX, -10, positionZ); 
+            // Preveri ali so vsi otroci objekta mesh - za metanje senc
+            building.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    console.log("To je Mesh!", child);
+                    child.castShadow = true;  
+                    child.receiveShadow = true;  
+                }
+            });
             scene.add(building);
             buildings.push(building); 
         }, undefined, function (error) {

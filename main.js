@@ -6,10 +6,13 @@ import { loadSounds } from './audioManager.js';
 import { loadScenario, loadVehicleModel } from './sceneManager.js';
 import { setupControls } from './controls.js';
 import { createRain, animateRain } from './rainAnimation.js';
-
-
+import { addSunlight } from './blescanjeAnimation.js';
 
 const { scene, camera, renderer } = setupScene();
+
+
+addSunlight(scene);
+
 
 const container = document.getElementById('canvas');
 const width = container.offsetWidth;
